@@ -17,12 +17,12 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     if (token && !user) {
-      // Attempt to fetch profile with saved token (stubbed for now).
       authService.getProfile(token)
         .then((u) => setUser(u))
         .catch(() => {
           setToken(null);
           localStorage.removeItem('jwt');
+          localStorage.removeItem('refresh');
         });
     }
   }, [token, user]);
@@ -30,9 +30,8 @@ export function AuthProvider({ children }) {
   const login = async (email, password) => {
     const res = await authService.login(email, password);
     if (res?.token) {
-      localStorage.setItem('jwt', res.token);
       setToken(res.token);
-      setUser(res.user || { email, role: res.role || 'user' });
+      setUser(res.user || null);
       const from = location?.state?.from?.pathname || '/dashboard';
       navigate(from, { replace: true });
     }
@@ -47,7 +46,6 @@ export function AuthProvider({ children }) {
   const logout = () => {
     setUser(null);
     setToken(null);
-    localStorage.removeItem('jwt');
     authService.logout();
     navigate('/', { replace: true });
   };

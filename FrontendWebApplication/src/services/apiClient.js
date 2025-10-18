@@ -13,24 +13,60 @@ export function getWebsocketUrl() {
   return WS_URL;
 }
 
+// attach token from localStorage if not provided
+function resolveToken(explicitToken) {
+  if (explicitToken) return explicitToken;
+  try {
+    return localStorage.getItem('jwt');
+  } catch {
+    return null;
+  }
+}
+
 // PUBLIC_INTERFACE
 export async function apiFetch(path, { method = 'GET', headers = {}, body = null, token = null } = {}) {
   /**
    * Wrapper for fetch with base URL, JSON handling, and JWT header attachment.
-   * Note: This includes a simple 401 handler placeholder for future refresh-token logic.
+   * Includes simple refresh-token attempt on 401 using /auth/refresh if refresh token exists.
    */
   const url = `${API_BASE_URL}${path}`;
+  const bearer = resolveToken(token);
   const finalHeaders = {
     'Content-Type': 'application/json',
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    ...(bearer ? { Authorization: `Bearer ${bearer}` } : {}),
     ...headers,
   };
-  const res = await fetch(url, { method, headers: finalHeaders, body: body ? JSON.stringify(body) : null });
+  let res = await fetch(url, { method, headers: finalHeaders, body: body ? JSON.stringify(body) : null });
 
   if (res.status === 401) {
-    // TODO: Implement refresh token flow with backend once available.
-    // For now, just return an error-like object.
-    return { error: 'Unauthorized', status: 401 };
+    // naive refresh attempt
+    try {
+      const refresh = localStorage.getItem('refresh');
+      if (refresh) {
+        const r = await fetch(`${API_BASE_URL}/auth/refresh`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ refresh })
+        });
+        if (r.ok) {
+          const data = await r.json();
+          const newToken = data?.data?.token;
+          if (newToken) {
+            localStorage.setItem('jwt', newToken);
+            const retryHeaders = {
+              ...finalHeaders,
+              Authorization: `Bearer ${newToken}`,
+            };
+            res = await fetch(url, { method, headers: retryHeaders, body: body ? JSON.stringify(body) : null });
+          }
+        }
+      }
+    } catch {
+      // ignore and fall through
+    }
+    if (res.status === 401) {
+      return { error: 'Unauthorized', status: 401 };
+    }
   }
 
   const text = await res.text();

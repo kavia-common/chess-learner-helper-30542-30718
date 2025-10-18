@@ -47,6 +47,21 @@ Notes:
 - Storage: set STORAGE_DRIVER=local (default) or s3. For s3, set S3_ENDPOINT (for S3-compatible), S3_REGION, S3_BUCKET, S3_ACCESS_KEY_ID, S3_SECRET_ACCESS_KEY
 - Env validation runs on startup and will warn for missing optional vars and exit for missing required vars.
 
+## Docker Compose (local dev)
+
+From the repository root:
+
+```
+docker-compose up --build
+```
+
+This starts:
+- Postgres at localhost:5432
+- Backend at http://localhost:4000
+- Frontend at http://localhost:3000
+
+On first run the backend container runs `prisma migrate deploy`. If developing schema, exec into container to run `npm run prisma:migrate`.
+
 ## Scripts
 
 - dev: start dev server with ts-node-dev
@@ -58,30 +73,26 @@ Notes:
 - prisma:studio: open Prisma Studio
 - seed: basic data seed
 - test: placeholder
+- lint: echo "No linter configured yet" && exit 0
 
 ## Environment variables
 
 See .env.example for complete list:
-- PORT, APP_BASE_URL, WEBSOCKET_URL, CORS_ORIGINS
+- PORT, APP_BASE_URL, CORS_ORIGINS
 - DATABASE_URL
 - JWT_SECRET, JWT_REFRESH_SECRET
 - EMAIL_FROM, SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS
 - OAUTH_GOOGLE_CLIENT_ID, OAUTH_GOOGLE_CLIENT_SECRET, OAUTH_GOOGLE_REDIRECT_URI
+- STORAGE_DRIVER and optional S3_*
 
 ## Routes overview
 
-- /auth: register, login, refresh, logout, verify-email, resend-verification, forgot-password, reset-password, oauth/google/callback (stub)
-- /users: me (GET/PUT), delete, upload-avatar (stub)
+- /auth: register, login, refresh, logout, verify-email, resend-verification, forgot-password, reset-password, oauth/google, oauth/google/callback
+- /users: me (GET/PUT/DELETE), upload-avatar
 - /lessons: list, get/:id, progress (POST)
 - /quizzes: list, get/:id, submit (POST)
-- /games: start-ai, move, history, detail/:id
+- /games: start-ai, ai-move, move, history, detail/:id
 - /progress: summary, leaderboards
 - /admin: users CRUD, audit logs, lessons CRUD under /admin/lessons
 
 All protected endpoints require Authorization: Bearer <token>.
-
-## Notes
-
-- Email sending and Google OAuth are stubbed for now.
-- Avatar upload is not implemented (returns 501).
-- WebSocket endpoints are not implemented yet; a future service can mount them and update docs accordingly.

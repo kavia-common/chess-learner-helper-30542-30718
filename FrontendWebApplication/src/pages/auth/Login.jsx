@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { Link, useLocation } from 'react-router-dom';
 import { getOAuthUrl } from '../../services/authService';
@@ -12,6 +12,18 @@ export default function Login() {
   const [form, setForm] = useState({ email: '', password: '' });
   const [errors, setErrors] = useState({});
   const [msg, setMsg] = useState('');
+
+  useEffect(() => {
+    // Listen for OAuth popup posting token
+    function onMessage(ev) {
+      if (ev?.data?.type === 'oauth_success' && ev?.data?.token) {
+        localStorage.setItem('jwt', ev.data.token);
+        window.location.href = '/dashboard';
+      }
+    }
+    window.addEventListener('message', onMessage);
+    return () => window.removeEventListener('message', onMessage);
+  }, []);
 
   const validate = () => {
     const e = {};
@@ -47,7 +59,18 @@ export default function Login() {
 
       <div style={{ marginTop: '1rem' }}>
         <p>Or continue with</p>
-        <a href={getOAuthUrl('google')} className="btn" aria-label="Sign in with Google">Google</a>
+        <a
+          href={getOAuthUrl('google')}
+          className="btn"
+          aria-label="Sign in with Google"
+          onClick={(e) => {
+            e.preventDefault();
+            const w = window.open(getOAuthUrl('google'), 'oauth_google', 'width=500,height=600');
+            if (!w) window.location.href = getOAuthUrl('google');
+          }}
+        >
+          Google
+        </a>
       </div>
 
       {msg && <p role="status">{msg}</p>}

@@ -2,6 +2,7 @@ import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import PublicRoutes from './PublicRoutes';
 import ProtectedRoute from './ProtectedRoute';
+import { useAuth } from '../context/AuthContext';
 
 import Home from '../pages/Home';
 import Register from '../pages/auth/Register';
@@ -24,6 +25,13 @@ import MultiplayerLobby from '../pages/games/MultiplayerLobby';
 
 import Leaderboards from '../pages/Leaderboards';
 import AdminDashboard from '../pages/admin/AdminDashboard';
+
+function AdminRoute({ element }) {
+  const { user } = useAuth();
+  if (!user) return <Navigate to="/auth/login" replace />;
+  if (user.role !== 'admin') return <Navigate to="/dashboard" replace />;
+  return element;
+}
 
 // PUBLIC_INTERFACE
 export default function RoutesIndex() {
@@ -55,7 +63,7 @@ export default function RoutesIndex() {
         <Route path="/games/multiplayer" element={<MultiplayerLobby />} />
 
         <Route path="/leaderboards" element={<Leaderboards />} />
-        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/admin" element={<AdminRoute element={<AdminDashboard />} />} />
       </Route>
 
       {/* Fallback */}
