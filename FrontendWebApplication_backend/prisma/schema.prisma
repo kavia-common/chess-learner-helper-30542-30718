@@ -1,0 +1,228 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                 String                @id @default(cuid())
+  email              String                @unique
+  emailVerified      Boolean               @default(false)
+  passwordHash       String?
+  role               Role                  @default(LEARNER)
+  createdAt          DateTime              @default(now())
+  updatedAt          DateTime              @updatedAt
+  profile            Profile?
+  oauthAccounts      OAuthAccount[]
+  emailTokens        EmailVerificationToken[]
+  passwordResetTokens PasswordResetToken[]
+  lessonProgress     LessonProgress[]
+  quizAttempts       QuizAttempt[]
+  gamesWhite         Game[]                @relation("WhitePlayer")
+  gamesBlack         Game[]                @relation("BlackPlayer")
+  ratings            Rating[]
+  userBadges         UserBadge[]
+  auditLogs          AuditLog[]
+}
+
+model OAuthAccount {
+  id            String  @id @default(cuid())
+  provider      String
+  providerId    String
+  accessToken   String?
+  refreshToken  String?
+  userId        String
+  user          User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt     DateTime @default(now())
+  @@unique([provider, providerId])
+}
+
+model EmailVerificationToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model Profile {
+  id        String  @id @default(cuid())
+  userId    String  @unique
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name      String?
+  avatarUrl String?
+  bio       String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Lesson {
+  id          String          @id @default(cuid())
+  title       String
+  description String?
+  content     String?
+  difficulty  String          @default("beginner")
+  modules     LessonModule[]
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+}
+
+model LessonModule {
+  id        String  @id @default(cuid())
+  lessonId  String
+  lesson    Lesson  @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  title     String
+  content   String?
+  order     Int     @default(0)
+}
+
+model LessonProgress {
+  id          String   @id @default(cuid())
+  userId      String
+  lessonId    String
+  progress    Int      @default(0) // 0-100
+  completed   Boolean  @default(false)
+  updatedAt   DateTime @updatedAt
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson      Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  @@unique([userId, lessonId])
+}
+
+model Quiz {
+  id          String          @id @default(cuid())
+  title       String
+  description String?
+  questions   QuizQuestion[]
+  lessonId    String?
+  lesson      Lesson?         @relation(fields: [lessonId], references: [id])
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+}
+
+model QuizQuestion {
+  id        String @id @default(cuid())
+  quizId    String
+  quiz      Quiz   @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  prompt    String
+  options   String // JSON string for options
+  answer    String // JSON string for answer
+  order     Int    @default(0)
+}
+
+model QuizAttempt {
+  id        String   @id @default(cuid())
+  userId    String
+  quizId    String
+  score     Int
+  startedAt DateTime @default(now())
+  finishedAt DateTime?
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quiz      Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  @@index([userId])
+  @@index([quizId])
+}
+
+model Game {
+  id           String   @id @default(cuid())
+  whiteId      String?
+  blackId      String?
+  white        User?    @relation("WhitePlayer", fields: [whiteId], references: [id])
+  black        User?    @relation("BlackPlayer", fields: [blackId], references: [id])
+  result       String?  // "1-0", "0-1", "1/2-1/2"
+  rated        Boolean  @default(false)
+  moves        GameMove[]
+  createdAt    DateTime @default(now())
+}
+
+model GameMove {
+  id        String @id @default(cuid())
+  gameId    String
+  game      Game   @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  move      String
+  moveNumber Int
+  san       String? // Standard Algebraic Notation
+  createdAt DateTime @default(now())
+}
+
+model Rating {
+  id        String  @id @default(cuid())
+  userId    String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  value     Int     @default(1200)
+  category  String  @default("rapid")
+  createdAt DateTime @default(now())
+  @@index([userId])
+}
+
+model Puzzle {
+  id        String  @id @default(cuid())
+  fen       String
+  solution  String   // JSON string for best moves
+  theme     String?
+  rating    Int      @default(1000)
+  createdAt DateTime @default(now())
+}
+
+model Challenge {
+  id        String  @id @default(cuid())
+  title     String
+  description String?
+  points    Int     @default(10)
+  createdAt DateTime @default(now())
+}
+
+model Badge {
+  id        String  @id @default(cuid())
+  name      String  @unique
+  description String?
+  iconUrl   String?
+  createdAt DateTime @default(now())
+}
+
+model UserBadge {
+  id        String  @id @default(cuid())
+  userId    String
+  badgeId   String
+  awardedAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  badge     Badge    @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+  @@unique([userId, badgeId])
+}
+
+model Leaderboard {
+  id        String  @id @default(cuid())
+  period    String  // daily, weekly, monthly, all-time
+  userId    String
+  points    Int     @default(0)
+  rank      Int?
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  @@index([period])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  action    String
+  meta      String? // JSON
+  createdAt DateTime @default(now())
+}
+
+enum Role {
+  LEARNER
+  ADMIN
+}
