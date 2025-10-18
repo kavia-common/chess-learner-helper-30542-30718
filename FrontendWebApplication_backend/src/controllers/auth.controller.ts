@@ -113,20 +113,26 @@ export async function resendVerification(req: Request, res: Response) {
   res.json({ success: true, message: 'If the email exists, a verification link has been sent.' });
 }
 
+import { emailService } from '../services/email.service.js';
+import { googleOAuth } from '../services/oauth.service.js';
+
 // PUBLIC_INTERFACE
 export async function forgotPassword(req: Request, res: Response) {
-  /** Create password reset token (stub sending email). */
+  /** Create password reset token and email link (SMTP logs if not configured). */
   const { email } = req.body || {};
   if (!email) return res.status(400).json({ success: false, error: 'email required' });
   const user = await prisma.user.findUnique({ where: { email } });
   if (user) {
+    const token = `reset_${user.id}_${Date.now()}`;
     await prisma.passwordResetToken.create({
       data: {
-        token: `reset_${user.id}_${Date.now()}`,
+        token,
         userId: user.id,
         expiresAt: new Date(Date.now() + 1000 * 60 * 60)
       }
     });
+    const resetUrl = `${process.env.APP_BASE_URL || 'http://localhost:4000'}/auth/reset?token=${encodeURIComponent(token)}`;
+    await emailService.sendMail(email, 'Password reset', `Reset your password: ${resetUrl}`, `<p>Reset your password: <a href="${resetUrl}">${resetUrl}</a></p>`);
   }
   res.json({ success: true, message: 'If an account exists, a reset link has been sent.' });
 }
@@ -144,8 +150,77 @@ export async function resetPassword(req: Request, res: Response) {
   res.json({ success: true, message: 'Password updated' });
 }
 
+/**
+ * PUBLIC_INTERFACE
+ * Starts Google OAuth flow by redirecting to consent screen.
+ */
+export async function googleOAuthStart(req: Request, res: Response) {
+  /** Redirects to Google consent screen. */
+  const state = req.query.state?.toString();
+  const url = googleOAuth.getAuthUrl(state || undefined);
+  res.redirect(url);
+}
+
 // PUBLIC_INTERFACE
-export async function googleOAuthCallback(_req: Request, res: Response) {
-  /** Google OAuth callback stub endpoint. */
-  res.json({ success: true, message: 'Google OAuth callback not implemented. TODO.' });
+export async function googleOAuthCallback(req: Request, res: Response) {
+  /** Handles Google OAuth callback, creates/links account, returns simple HTML with token (for demo). */
+  const code = req.query.code?.toString();
+  if (!code) return res.status(400).send('Missing code');
+
+  try {
+    const tokens = await googleOAuth.exchangeCode(code);
+    const profile = await googleOAuth.getUserInfo(tokens.access_token);
+
+    // Link or create user
+    let user = await prisma.user.findUnique({ where: { email: profile.email } });
+    if (!user) {
+      user = await prisma.user.create({
+        data: {
+          email: profile.email,
+          emailVerified: true,
+          profile: { create: { name: profile.name || '' , avatarUrl: profile.picture || undefined } },
+        },
+      });
+    }
+    // Link OAuth account if missing
+    const existing = await prisma.oAuthAccount.findUnique({
+      where: { provider_providerId: { provider: 'google', providerId: profile.sub } },
+    });
+    if (!existing) {
+      await prisma.oAuthAccount.create({
+        data: {
+          provider: 'google',
+          providerId: profile.sub,
+          accessToken: tokens.access_token,
+          refreshToken: tokens.refresh_token,
+          userId: user.id,
+        },
+      });
+    }
+
+    const jwtToken = require('jsonwebtoken').sign(
+      { sub: user.id, role: user.role },
+      process.env.JWT_SECRET || 'dev',
+      { expiresIn: '1h' }
+    );
+
+    // Minimal UX: render a page that posts token to opener or shows it
+    const script = `
+<!doctype html><html><body>
+<script>
+  (function(){
+    try {
+      if (window.opener) {
+        window.opener.postMessage({ type: 'oauth_success', provider: 'google', token: '${jwtToken}' }, '*');
+        window.close();
+      }
+    } catch (e) {}
+  })();
+</script>
+<p>Login successful. Token: ${jwtToken}</p>
+</body></html>`;
+    res.setHeader('Content-Type', 'text/html').send(script);
+  } catch (e: any) {
+    res.status(400).send(`OAuth error: ${e.message || e}`);
+  }
 }

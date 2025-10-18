@@ -10,6 +10,13 @@ const PORT = Number(process.env.PORT || 4000);
 openApiSetup(app);
 
 const server = http.createServer(app);
+
+// Attach Multiplayer WebSocket server
+import { attachMultiplayerWSS } from './websocket/multiplayer.js';
+if (String(process.env.FEATURE_MULTIPLAYER || 'true') === 'true') {
+  attachMultiplayerWSS(server);
+}
+
 server.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.log(`Backend running on http://localhost:${PORT} - Docs at http://localhost:${PORT}/docs`);

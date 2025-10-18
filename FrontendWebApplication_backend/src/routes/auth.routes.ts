@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { validateBody } from '../middleware/validate.js';
-import { forgotPassword, googleOAuthCallback, login, logout, refresh, register, resendVerification, resetPassword, verifyEmail } from '../controllers/auth.controller.js';
+import { forgotPassword, googleOAuthCallback, googleOAuthStart, login, logout, refresh, register, resendVerification, resetPassword, verifyEmail } from '../controllers/auth.controller.js';
 import { z } from 'zod';
 
 const router = Router();
@@ -69,6 +69,7 @@ router.post('/resend-verification', validateBody(z.object({ email: z.string().em
  *     summary: Forgot password
  */
 router.post('/forgot-password', validateBody(z.object({ email: z.string().email() })), forgotPassword);
+router.post('/request-reset', validateBody(z.object({ email: z.string().email() })), forgotPassword);
 
 /**
  * @openapi
@@ -78,6 +79,7 @@ router.post('/forgot-password', validateBody(z.object({ email: z.string().email(
  *     summary: Reset password
  */
 router.post('/reset-password', validateBody(z.object({ token: z.string(), password: z.string().min(8) })), resetPassword);
+router.post('/reset', validateBody(z.object({ token: z.string(), password: z.string().min(8) })), resetPassword);
 
 /**
  * @openapi
@@ -86,6 +88,7 @@ router.post('/reset-password', validateBody(z.object({ token: z.string(), passwo
  *     tags: [Auth]
  *     summary: Google OAuth callback (stub)
  */
+router.get('/oauth/google', googleOAuthStart);
 router.get('/oauth/google/callback', googleOAuthCallback);
 
 export default router;

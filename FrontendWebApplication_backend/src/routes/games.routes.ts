@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { detail, history, makeMove, startAI } from '../controllers/games.controller.js';
 import { jwtAuth } from '../middleware/auth.js';
+import { aiMove } from '../controllers/ai.controller.js';
 
 const router = Router();
 
@@ -12,6 +13,16 @@ const router = Router();
  *     summary: Start AI game
  */
 router.post('/start-ai', jwtAuth, startAI);
+
+/**
+ * @openapi
+ * /games/ai-move:
+ *   post:
+ *     tags: [Games]
+ *     summary: Get AI move (stub)
+ *     description: Returns a legal move suggestion based on difficulty.
+ */
+router.post('/ai-move', jwtAuth, aiMove);
 
 /**
  * @openapi

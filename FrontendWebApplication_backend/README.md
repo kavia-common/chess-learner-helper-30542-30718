@@ -1,6 +1,6 @@
 # Chess Learner Helper - Backend API (Node.js/Express + TypeScript + Prisma)
 
-This service provides REST endpoints for authentication, users, lessons, quizzes, games, progress, and admin tools.
+This service provides REST endpoints for authentication, users, lessons, quizzes, games, progress, and admin tools, plus WebSocket multiplayer and adapters for email/OAuth/storage.
 
 ## Tech stack
 
@@ -39,6 +39,13 @@ npm run dev
 
 API will run at http://localhost:${PORT:-4000}
 OpenAPI docs at http://localhost:${PORT:-4000}/docs
+WebSocket namespace: ws://localhost:${PORT:-4000}/ws/multiplayer
+
+Notes:
+- Google OAuth: set OAUTH_GOOGLE_CLIENT_ID, OAUTH_GOOGLE_CLIENT_SECRET, and OAUTH_GOOGLE_REDIRECT_URI (must match /auth/oauth/google/callback)
+- SMTP email: set SMTP_* and EMAIL_FROM to enable real sending; if SMTP_HOST is empty, emails will be logged to console
+- Storage: set STORAGE_DRIVER=local (default) or s3. For s3, set S3_ENDPOINT (for S3-compatible), S3_REGION, S3_BUCKET, S3_ACCESS_KEY_ID, S3_SECRET_ACCESS_KEY
+- Env validation runs on startup and will warn for missing optional vars and exit for missing required vars.
 
 ## Scripts
 

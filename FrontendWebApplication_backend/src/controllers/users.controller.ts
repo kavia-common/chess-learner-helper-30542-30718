@@ -43,8 +43,32 @@ export async function deleteMe(req: AuthedRequest, res: Response) {
   res.json({ success: true, message: 'Account deleted' });
 }
 
+import { storageService } from '../services/storage.service.js';
+
 // PUBLIC_INTERFACE
-export async function uploadAvatar(_req: AuthedRequest, res: Response) {
-  /** Stub for avatar upload; to be implemented with storage. */
-  res.status(501).json({ success: false, error: 'Not implemented: avatar upload' });
+export async function uploadAvatar(req: AuthedRequest, res: Response) {
+  /** Uploads avatar image (expects base64 dataUrl or raw base64 in body.image). */
+  const id = req.user!.sub;
+  const { image } = (req.body || {}) as { image?: string };
+  if (!image) return res.status(400).json({ success: false, error: 'image required (base64)' });
+
+  let base64 = image;
+  let contentType = 'image/png';
+  const match = /^data:(.+);base64,(.*)$/.exec(image);
+  if (match) {
+    contentType = match[1] || 'image/png';
+    base64 = match[2];
+  }
+  try {
+    const buffer = Buffer.from(base64, 'base64');
+    const result = await storageService.uploadAvatar(id, buffer, contentType);
+    const profile = await prisma.profile.upsert({
+      where: { userId: id },
+      update: { avatarUrl: result.url },
+      create: { userId: id, avatarUrl: result.url },
+    });
+    res.json({ success: true, data: { avatarUrl: profile.avatarUrl } });
+  } catch (e: any) {
+    res.status(500).json({ success: false, error: e.message || 'upload_failed' });
+  }
 }

@@ -5,6 +5,8 @@ import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
+import path from 'path';
+import fs from 'fs';
 
 import { errorHandler, notFoundHandler } from './middleware/errorHandler.js';
 import authRoutes from './routes/auth.routes.js';
@@ -40,10 +42,42 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
+/**
+ * Basic environment validation (non-fatal warnings for optional features).
+ */
+function validateEnv() {
+  const required = ['JWT_SECRET', 'JWT_REFRESH_SECRET', 'DATABASE_URL'];
+  const missing = required.filter((k) => !process.env[k]);
+  if (missing.length) {
+    throw new Error(`Missing required env vars: ${missing.join(', ')}`);
+  }
+
+  const oauthVars = ['OAUTH_GOOGLE_CLIENT_ID', 'OAUTH_GOOGLE_CLIENT_SECRET', 'OAUTH_GOOGLE_REDIRECT_URI'];
+  const missOauth = oauthVars.filter((k) => !process.env[k]);
+  if (missOauth.length) {
+    // eslint-disable-next-line no-console
+    console.warn('[ENV] Google OAuth not fully configured:', missOauth.join(', '));
+  }
+
+  if (!process.env.SMTP_HOST) {
+    // eslint-disable-next-line no-console
+    console.warn('[ENV] SMTP not configured. EmailService will log emails to console.');
+  }
+
+  if ((process.env.STORAGE_DRIVER || 'local') === 'local') {
+    const dir = path.resolve(process.cwd(), 'uploads');
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+  }
+}
+validateEnv();
+
 // Health
 app.get('/health', (_req: Request, res: Response) => {
   res.json({ status: 'ok' });
 });
+
+// Serve static for local uploads
+app.use('/static', express.static(path.resolve(process.cwd(), 'uploads')));
 
 // Routes
 app.use('/auth', authRoutes);
@@ -94,4 +128,13 @@ export function openApiSetup(appInst: Application): void {
   };
   const spec = swaggerJsdoc(options);
   appInst.use('/docs', swaggerUi.serve, swaggerUi.setup(spec));
+
+  // WebSocket help for docs
+  appInst.get('/docs/websocket', (_req: Request, res: Response) => {
+    res.json({
+      note: 'Connect to ws /ws/multiplayer with ?token=<JWT>. Events: join_random, join_room, move, resign.',
+      path: '/ws/multiplayer',
+      auth: 'Bearer JWT as query token',
+    });
+  });
 }

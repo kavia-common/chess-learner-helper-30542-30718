@@ -36,7 +36,8 @@ router.delete('/me', jwtAuth, deleteMe);
  * /users/upload-avatar:
  *   post:
  *     tags: [Users]
- *     summary: Upload avatar (stub)
+ *     summary: Upload avatar
+ *     description: Expects JSON { image: 'data:<mime>;base64,....' } or raw base64 string in image.
  */
 router.post('/upload-avatar', jwtAuth, uploadAvatar);
 
