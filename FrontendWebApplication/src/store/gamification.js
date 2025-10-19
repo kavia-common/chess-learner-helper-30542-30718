@@ -91,7 +91,7 @@ export function GamificationProvider({ children }) {
     fetchDailyChallenge: async () => {
       dispatch({ type: ACTIONS.DAILY_START });
       try {
-        const data = await GamificationApi.getDailyChallenge();
+        const data = await GamificationApi.fetchDailyChallenge();
         dispatch({ type: ACTIONS.DAILY_SUCCESS, payload: data });
         return data;
       } catch (e) {
@@ -117,7 +117,7 @@ export function GamificationProvider({ children }) {
     fetchPuzzles: async ({ page = 1, pageSize = 12, difficulty = 'all' } = {}) => {
       dispatch({ type: ACTIONS.PUZZLES_START });
       try {
-        const data = await GamificationApi.getPuzzles({ page, pageSize, difficulty });
+        const data = await GamificationApi.fetchPuzzles({ page, pageSize, difficulty });
         dispatch({ type: ACTIONS.PUZZLES_SUCCESS, payload: data });
         return data;
       } catch (e) {
@@ -141,7 +141,7 @@ export function GamificationProvider({ children }) {
     fetchLeaderboards: async ({ period = 'weekly' } = {}) => {
       dispatch({ type: ACTIONS.LEADERBOARD_START });
       try {
-        const items = await GamificationApi.getLeaderboards({ period });
+        const items = await GamificationApi.fetchLeaderboards({ period });
         dispatch({ type: ACTIONS.LEADERBOARD_SUCCESS, payload: items });
         return items;
       } catch (e) {
@@ -153,7 +153,7 @@ export function GamificationProvider({ children }) {
     fetchAchievements: async () => {
       dispatch({ type: ACTIONS.ACH_START });
       try {
-        const data = await GamificationApi.getAchievements();
+        const data = await GamificationApi.fetchAchievements();
         dispatch({ type: ACTIONS.ACH_SUCCESS, payload: data });
         return data;
       } catch (e) {

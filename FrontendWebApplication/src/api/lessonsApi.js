@@ -4,27 +4,50 @@ import { httpClient } from "./httpClient";
 import { Endpoints } from "./endpoints";
 import { normalizeError } from "../utils/errorHandler";
 
-// PUBLIC_INTERFACE
-export async function fetchLessons() {
-  /** Fetch list of lessons. */
-  try {
-    const { data } = await httpClient.get(Endpoints.lessons());
-    return data;
-  } catch (e) {
-    throw normalizeError(e);
-  }
-}
+ // PUBLIC_INTERFACE
+ export async function fetchLessons() {
+   /** Fetch list of lessons. */
+   try {
+     const { data } = await httpClient.get(Endpoints.lessons());
+     return data;
+   } catch (e) {
+     throw normalizeError(e);
+   }
+ }
 
-// PUBLIC_INTERFACE
-export async function fetchLessonDetail(id) {
-  /** Fetch specific lesson details by id. */
-  try {
-    const { data } = await httpClient.get(Endpoints.lessonById(id));
-    return data;
-  } catch (e) {
-    throw normalizeError(e);
-  }
-}
+ // PUBLIC_INTERFACE
+ export async function getLessons() {
+   /** Alias for fetchLessons for store compatibility. */
+   return fetchLessons();
+ }
+
+ // PUBLIC_INTERFACE
+ export async function fetchLessonDetail(id) {
+   /** Fetch specific lesson details by id. */
+   try {
+     const { data } = await httpClient.get(Endpoints.lessonById(id));
+     return data;
+   } catch (e) {
+     throw normalizeError(e);
+   }
+ }
+
+ // PUBLIC_INTERFACE
+ export async function getLessonById(id) {
+   /** Alias for fetchLessonDetail for store compatibility. */
+   return fetchLessonDetail(id);
+ }
+
+ // PUBLIC_INTERFACE
+ export async function getQuizForLesson(id) {
+   /** Fetch quiz for a lesson prior to submitting answers. */
+   try {
+     const { data } = await httpClient.get(Endpoints.lessonQuiz(id));
+     return data;
+   } catch (e) {
+     throw normalizeError(e);
+   }
+ }
 
 // PUBLIC_INTERFACE
 export async function submitQuiz(id, answers) {

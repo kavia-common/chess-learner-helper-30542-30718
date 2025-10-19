@@ -36,11 +36,17 @@ import AuditLog from '../pages/admin/AuditLog';
 /**
  * PUBLIC_INTERFACE
  * AppRouter defines the route map for the SPA with React Router v6.
- * Now includes /admin routes protected by auth (ProtectedRoute) and role-based access (RoleGuard).
+ * Routes:
+ * - Public: Home, Lessons, LessonDetail, Quiz, AIPlay, Matchmaking, RealtimeGame, History, GameReplay,
+ *           DailyChallenge (/challenges), Puzzles, Leaderboards, Achievements, Auth pages.
+ * - Auth-protected: Profile, Settings, LinkAccounts, DashboardPlaceholder.
+ * - Admin-only: /admin subtree guarded by ProtectedRoute and RoleGuard(allowedRoles=['admin']).
+ * Includes a NotFound 404 catch-all.
  */
 export function AppRouter() {
   return (
     <Routes>
+      {/* Public routes */}
       <Route path="/" element={<Home />} />
       <Route path="/lessons" element={<LessonsList />} />
       <Route path="/lessons/:id" element={<LessonDetail />} />
@@ -54,6 +60,15 @@ export function AppRouter() {
       <Route path="/puzzles" element={<Puzzles />} />
       <Route path="/leaderboards" element={<Leaderboards />} />
       <Route path="/achievements" element={<Achievements />} />
+
+      {/* Auth routes */}
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/verify-email" element={<VerifyEmail />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
+
+      {/* Authenticated user routes */}
       <Route
         path="/profile"
         element={
@@ -70,16 +85,19 @@ export function AppRouter() {
           </ProtectedRoute>
         }
       />
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-      <Route path="/verify-email" element={<VerifyEmail />} />
-      <Route path="/forgot-password" element={<ForgotPassword />} />
-      <Route path="/reset-password" element={<ResetPassword />} />
       <Route
         path="/link-accounts"
         element={
           <ProtectedRoute>
             <LinkAccounts />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <DashboardPlaceholder />
           </ProtectedRoute>
         }
       />
@@ -103,14 +121,7 @@ export function AppRouter() {
         <Route path="audit-log" element={<AuditLog />} />
       </Route>
 
-      <Route
-        path="/dashboard"
-        element={
-          <ProtectedRoute>
-            <DashboardPlaceholder />
-          </ProtectedRoute>
-        }
-      />
+      {/* 404 Fallback */}
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

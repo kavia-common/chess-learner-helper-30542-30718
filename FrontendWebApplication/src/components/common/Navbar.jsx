@@ -52,18 +52,46 @@ export function Navbar() {
         background: 'var(--bg-secondary)'
       }}
     >
-      <NavLink to="/" style={linkStyle} end aria-label="Home">Home</NavLink>
-      <NavLink to="/lessons" style={linkStyle} aria-label="Lessons">Lessons</NavLink>
-      <NavLink to="/games/ai" style={linkStyle} aria-label="Play against AI">Play vs AI</NavLink>
-      <NavLink to="/games/match" style={linkStyle} aria-label="Matchmaking">Matchmaking</NavLink>
-      <NavLink to="/history" style={linkStyle} aria-label="Game history">History</NavLink>
-      <NavLink to="/challenges" style={linkStyle} aria-label="Daily challenges">Daily</NavLink>
-      <NavLink to="/puzzles" style={linkStyle} aria-label="Puzzles">Puzzles</NavLink>
-      <NavLink to="/leaderboards" style={linkStyle} aria-label="Leaderboards">Leaderboards</NavLink>
-      <NavLink to="/achievements" style={linkStyle} aria-label="Achievements">Achievements</NavLink>
+      {/* Primary sections */}
+      <NavLink to="/" style={linkStyle} end aria-label="Home">
+        {({ isActive }) => <span aria-current={isActive ? 'page' : undefined}>Home</span>}
+      </NavLink>
+      <NavLink to="/lessons" style={linkStyle} aria-label="Lessons">
+        {({ isActive }) => <span aria-current={isActive ? 'page' : undefined}>Lessons</span>}
+      </NavLink>
 
+      {/* Games */}
+      <NavLink to="/games/ai" style={linkStyle} aria-label="Play against AI">
+        {({ isActive }) => <span aria-current={isActive ? 'page' : undefined}>Play vs AI</span>}
+      </NavLink>
+      <NavLink to="/games/match" style={linkStyle} aria-label="Matchmaking">
+        {({ isActive }) => <span aria-current={isActive ? 'page' : undefined}>Matchmaking</span>}
+      </NavLink>
+
+      {/* History */}
+      <NavLink to="/history" style={linkStyle} aria-label="Game history">
+        {({ isActive }) => <span aria-current={isActive ? 'page' : undefined}>History</span>}
+      </NavLink>
+
+      {/* Gamification */}
+      <NavLink to="/challenges" style={linkStyle} aria-label="Daily challenges">
+        {({ isActive }) => <span aria-current={isActive ? 'page' : undefined}>Daily</span>}
+      </NavLink>
+      <NavLink to="/puzzles" style={linkStyle} aria-label="Puzzles">
+        {({ isActive }) => <span aria-current={isActive ? 'page' : undefined}>Puzzles</span>}
+      </NavLink>
+      <NavLink to="/leaderboards" style={linkStyle} aria-label="Leaderboards">
+        {({ isActive }) => <span aria-current={isActive ? 'page' : undefined}>Leaderboards</span>}
+      </NavLink>
+      <NavLink to="/achievements" style={linkStyle} aria-label="Achievements">
+        {({ isActive }) => <span aria-current={isActive ? 'page' : undefined}>Achievements</span>}
+      </NavLink>
+
+      {/* Admin visible only for admins */}
       {role === 'admin' && (
-        <NavLink to="/admin" style={linkStyle} aria-label="Admin dashboard">Admin</NavLink>
+        <NavLink to="/admin" style={linkStyle} aria-label="Admin dashboard" end>
+          {({ isActive }) => <span aria-current={isActive ? 'page' : undefined}>Admin</span>}
+        </NavLink>
       )}
 
       <div style={{ flex: 1 }} />

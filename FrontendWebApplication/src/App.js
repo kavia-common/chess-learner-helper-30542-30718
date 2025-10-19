@@ -1,5 +1,6 @@
 import React, { useEffect, useReducer } from 'react';
 import './App.css';
+import './styles/accessibility.css';
 import { AppRouter } from './router/AppRouter';
 import { Navbar } from './components/common/Navbar';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
