@@ -87,18 +87,21 @@ export const authActions = {
   login: (dispatch) => async ({ email, password }) => {
     dispatch({ type: ACTIONS.LOGIN_START });
     try {
-      const data = await AuthApi.login({ email, password });
+      const data = await AuthApi.login(email, password);
       dispatch({ type: ACTIONS.LOGIN_SUCCESS, payload: data });
       return data;
     } catch (e) {
-      dispatch({ type: ACTIONS.LOGIN_ERROR, payload: e.message });
+      dispatch({ type: ACTIONS.LOGIN_ERROR, payload: e.message || String(e) });
       throw e;
     }
   },
   // PUBLIC_INTERFACE
   logout: (dispatch) => async () => {
-    // If we had a backend logout, call it here
-    dispatch({ type: ACTIONS.LOGOUT });
+    try {
+      await AuthApi.logout();
+    } finally {
+      dispatch({ type: ACTIONS.LOGOUT });
+    }
   },
   // PUBLIC_INTERFACE
   register: (dispatch) => async ({ email, password }) => {
@@ -108,7 +111,7 @@ export const authActions = {
       dispatch({ type: ACTIONS.REGISTER_SUCCESS, payload: data });
       return data;
     } catch (e) {
-      dispatch({ type: ACTIONS.REGISTER_ERROR, payload: e.message });
+      dispatch({ type: ACTIONS.REGISTER_ERROR, payload: e.message || String(e) });
       throw e;
     }
   },
@@ -124,8 +127,10 @@ export const authActions = {
       }
       return data;
     } catch (e) {
-      dispatch({ type: ACTIONS.REFRESH_ERROR, payload: e.message });
+      dispatch({ type: ACTIONS.REFRESH_ERROR, payload: e.message || String(e) });
       return null;
     }
   }
 };
+
+export * from './hooks';

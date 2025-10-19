@@ -1,19 +1,18 @@
-import { useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useStore, authActions } from '..';
 
 /**
  * PUBLIC_INTERFACE
  * useAuth
- * A consolidated hook that exposes memoized auth state selectors and bound action creators.
+ * A consolidated hook that exposes memoized auth state and bound action creators.
  *
- * Returns:
- * - state: { isAuthenticated, user, token, loading, error }
- * - actions: { login({ email, password }), logout(), register({ email, password }), refresh() }
+ * Exposes: isAuthenticated, user, token, loading, error, login, logout, register, refresh
  */
-export function useAuth() {
+export default function useAuth() {
   const { state, dispatch } = useStore();
 
-  const selectors = useMemo(() => {
+  // Select and memoize the sub-state we care about
+  const { isAuthenticated, user, token, loading, error } = useMemo(() => {
     const auth = state?.auth || {};
     return {
       isAuthenticated: !!auth.isAuthenticated,
@@ -24,7 +23,8 @@ export function useAuth() {
     };
   }, [state?.auth]);
 
-  const actions = useMemo(
+  // Bind actions with stable identity
+  const { login, logout, register, refresh } = useMemo(
     () => ({
       login: authActions.login(dispatch),
       logout: authActions.logout(dispatch),
@@ -34,16 +34,15 @@ export function useAuth() {
     [dispatch]
   );
 
-  // Stable API shape
-  const api = useMemo(
-    () => ({
-      state: selectors,
-      actions,
-    }),
-    [selectors, actions]
-  );
-
-  return api;
+  return {
+    isAuthenticated,
+    user,
+    token,
+    loading,
+    error,
+    login,
+    logout,
+    register,
+    refresh,
+  };
 }
-
-export default useAuth;

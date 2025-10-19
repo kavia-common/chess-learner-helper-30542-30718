@@ -1,40 +1,24 @@
 import { useMemo } from 'react';
-import { useUser as useUserContext, UserProvider } from '../user';
+import * as userApi from '../../api/userApi';
 
 /**
  * PUBLIC_INTERFACE
  * useUser
- * Hook exposing memoized user state selectors and actions.
- *
- * Returns:
- * - state: { profile, avatar, settings, accountDeletion }
- * - actions: { fetchProfile, updateProfile, uploadAvatar, fetchSettings, updateSettings, deleteAccount }
- *
- * Note: Must be used within <UserProvider>.
+ * Provides user helpers bound to API. No store context found, so we surface actions only.
  */
-export function useUser() {
-  const ctx = useUserContext();
-  const state = ctx?.state || {};
-  const actions = ctx?.actions || {};
-
-  const selectors = useMemo(
+export default function useUser() {
+  const actions = useMemo(
     () => ({
-      profile: state.profile,
-      avatar: state.avatar,
-      settings: state.settings,
-      accountDeletion: state.accountDeletion,
+      fetchUserProfile: userApi.fetchUserProfile,
+      getProfile: userApi.getProfile,
+      updateProfile: userApi.updateProfile,
+      uploadAvatar: userApi.uploadAvatar,
+      getSettings: userApi.getSettings,
+      updateSettings: userApi.updateSettings,
+      deleteAccount: userApi.deleteAccount,
     }),
-    [state.profile, state.avatar, state.settings, state.accountDeletion]
+    []
   );
 
-  return useMemo(
-    () => ({
-      state: selectors,
-      actions,
-    }),
-    [selectors, actions]
-  );
+  return actions;
 }
-
-export default useUser;
-export { UserProvider };

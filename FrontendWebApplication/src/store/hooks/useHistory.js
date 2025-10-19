@@ -1,40 +1,23 @@
 import { useMemo } from 'react';
-import { useHistoryStore as useHistoryContext, HistoryProvider } from '../history';
+import * as historyApi from '../../api/historyApi';
 
 /**
  * PUBLIC_INTERFACE
  * useHistory
- * Hook exposing memoized history state selectors and bound actions.
- *
- * Returns:
- * - state: { list, detail, hint, analysis }
- * - actions: { fetchHistory({ page, pageSize, filters }), fetchGame(gameId), fetchHint({ gameId, plyIndex }), fetchAnalysis(gameId) }
- *
- * Note: Must be used within <HistoryProvider>.
+ * Provides history helpers bound to API. No store context found, so we surface actions only.
  */
-export function useHistory() {
-  const ctx = useHistoryContext();
-  const state = ctx?.state || {};
-  const actions = ctx?.actions || {};
-
-  const selectors = useMemo(
+export default function useHistory() {
+  const actions = useMemo(
     () => ({
-      list: state.list,
-      detail: state.detail,
-      hint: state.hint,
-      analysis: state.analysis,
+      fetchHistory: historyApi.fetchHistory,
+      listHistory: historyApi.listHistory,
+      getGameById: historyApi.getGameById,
+      getHintForPosition: historyApi.getHintForPosition,
+      fetchAnalysis: historyApi.fetchAnalysis,
+      getAnalysisForGame: historyApi.getAnalysisForGame,
     }),
-    [state.list, state.detail, state.hint, state.analysis]
+    []
   );
 
-  return useMemo(
-    () => ({
-      state: selectors,
-      actions,
-    }),
-    [selectors, actions]
-  );
+  return actions;
 }
-
-export default useHistory;
-export { HistoryProvider };

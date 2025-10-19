@@ -1,41 +1,26 @@
-import { useContext, useMemo } from 'react';
-import { LessonsProvider, useLessons as useLessonsContext } from '../lessons';
+import { useMemo } from 'react';
+import * as lessonsApi from '../../api/lessonsApi';
 
 /**
  * PUBLIC_INTERFACE
  * useLessons
- * Hook that exposes memoized lessons state selectors and bound actions from LessonsProvider context.
- *
- * Returns:
- * - state: { list, detail, quiz, progress }
- * - actions: { fetchLessons(), fetchLessonById(id), fetchQuiz(lessonId), submitQuiz(lessonId, answers), fetchProgress() }
- *
- * Note: Must be used within <LessonsProvider>.
+ * Provides lessons helpers. Since no lessons context/store is present, this hook
+ * exposes direct API-bound actions and leaves data caching to consumers or SWR in future.
  */
-export function useLessons() {
-  const ctx = useLessonsContext();
-  const state = ctx?.state || {};
-  const actions = ctx?.actions || {};
-
-  const selectors = useMemo(
+export default function useLessons() {
+  // No internal state source; expose actions as stable functions.
+  const actions = useMemo(
     () => ({
-      list: state.list,
-      detail: state.detail,
-      quiz: state.quiz,
-      progress: state.progress,
+      fetchLessons: lessonsApi.fetchLessons,
+      getLessons: lessonsApi.getLessons,
+      fetchLessonDetail: lessonsApi.fetchLessonDetail,
+      getLessonById: lessonsApi.getLessonById,
+      getQuizForLesson: lessonsApi.getQuizForLesson,
+      submitQuiz: lessonsApi.submitQuiz,
+      getProgress: lessonsApi.getProgress,
     }),
-    [state.list, state.detail, state.quiz, state.progress]
+    []
   );
 
-  return useMemo(
-    () => ({
-      state: selectors,
-      actions,
-    }),
-    [selectors, actions]
-  );
+  return actions;
 }
-
-export default useLessons;
-// Re-export provider to ease integration if needed by pages.
-export { LessonsProvider };

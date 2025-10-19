@@ -1,39 +1,23 @@
 import { useMemo } from 'react';
-import { useGames as useGamesContext, GamesProvider } from '../games';
+import * as gamesApi from '../../api/gamesApi';
 
 /**
  * PUBLIC_INTERFACE
  * useGames
- * Hook exposing memoized games state selectors and bound actions.
- *
- * Returns:
- * - state: { ai, matchmaking, realtime }
- * - actions: { setAiDifficulty, newAiGame, makeAiMove, startMatchmaking, pollMatchmaking, cancelMatchmaking, loadRealtimeGame, applyRealtimeMove }
- *
- * Note: Must be used within <GamesProvider>.
+ * Provides game helpers bound to API. No store context found, so we surface actions only.
  */
-export function useGames() {
-  const ctx = useGamesContext();
-  const state = ctx?.state || {};
-  const actions = ctx?.actions || {};
-
-  const selectors = useMemo(
+export default function useGames() {
+  const actions = useMemo(
     () => ({
-      ai: state.ai,
-      matchmaking: state.matchmaking,
-      realtime: state.realtime,
+      fetchGames: gamesApi.fetchGames,
+      startAIGame: gamesApi.startAIGame,
+      requestMatchmaking: gamesApi.requestMatchmaking,
+      pollMatchmaking: gamesApi.pollMatchmaking,
+      cancelMatchmaking: gamesApi.cancelMatchmaking,
+      getGameState: gamesApi.getGameState,
     }),
-    [state.ai, state.matchmaking, state.realtime]
+    []
   );
 
-  return useMemo(
-    () => ({
-      state: selectors,
-      actions,
-    }),
-    [selectors, actions]
-  );
+  return actions;
 }
-
-export default useGames;
-export { GamesProvider };

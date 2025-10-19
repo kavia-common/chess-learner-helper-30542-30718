@@ -1,40 +1,26 @@
 import { useMemo } from 'react';
-import { useGamification as useGamificationContext, GamificationProvider } from '../gamification';
+import * as gamificationApi from '../../api/gamificationApi';
 
 /**
  * PUBLIC_INTERFACE
  * useGamification
- * Hook exposing memoized gamification state selectors and bound actions.
- *
- * Returns:
- * - state: { daily, puzzles, leaderboards, achievements }
- * - actions: { fetchDailyChallenge, completeDaily, fetchPuzzles, submitPuzzle, fetchLeaderboards, fetchAchievements }
- *
- * Note: Must be used within <GamificationProvider>.
+ * Provides gamification helpers bound to API. No store context found, so we surface actions only.
  */
-export function useGamification() {
-  const ctx = useGamificationContext();
-  const state = ctx?.state || {};
-  const actions = ctx?.actions || {};
-
-  const selectors = useMemo(
+export default function useGamification() {
+  const actions = useMemo(
     () => ({
-      daily: state.daily,
-      puzzles: state.puzzles,
-      leaderboards: state.leaderboards,
-      achievements: state.achievements,
+      fetchAchievements: gamificationApi.fetchAchievements,
+      fetchLeaderboards: gamificationApi.fetchLeaderboards,
+      fetchDailyChallenge: gamificationApi.fetchDailyChallenge,
+      completeDailyChallenge: gamificationApi.completeDailyChallenge,
+      fetchPuzzles: gamificationApi.fetchPuzzles,
+      submitPuzzleSolution: gamificationApi.submitPuzzleSolution,
+      // Aliases
+      getLeaderboards: gamificationApi.getLeaderboards,
+      getAchievements: gamificationApi.getAchievements,
     }),
-    [state.daily, state.puzzles, state.leaderboards, state.achievements]
+    []
   );
 
-  return useMemo(
-    () => ({
-      state: selectors,
-      actions,
-    }),
-    [selectors, actions]
-  );
+  return actions;
 }
-
-export default useGamification;
-export { GamificationProvider };

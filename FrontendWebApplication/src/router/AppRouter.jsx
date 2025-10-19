@@ -4,7 +4,7 @@ import { Home } from '../pages/Home';
 import { NotFound } from '../pages/NotFound';
 import { ProtectedRoute } from '../components/common/ProtectedRoute';
 import RoleGuard from '../components/common/RoleGuard';
-import { Login } from '../pages/auth/Login';
+import Login from '../pages/auth/Login';
 import { Register } from '../pages/auth/Register';
 import { VerifyEmail } from '../pages/auth/VerifyEmail';
 import { ForgotPassword } from '../pages/auth/ForgotPassword';
