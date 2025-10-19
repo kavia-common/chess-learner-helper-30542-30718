@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useLessons } from '../../store/lessons';
+import { logQuizSubmitted } from '../../utils/analytics';
 
 /**
  * PUBLIC_INTERFACE
@@ -46,6 +47,8 @@ export function Quiz() {
       return;
     }
     await actions.submitQuiz(id, answers);
+    const score = typeof state?.quiz?.result?.score === 'number' ? state.quiz.result.score : undefined;
+    logQuizSubmitted({ quizId: id, score });
   };
 
   return (

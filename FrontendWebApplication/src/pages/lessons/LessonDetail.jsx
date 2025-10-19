@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useLessons } from '../../store/lessons';
 import { ProgressBar } from '../../components/common/ProgressBar';
+import { logLessonStarted, logLessonCompleted } from '../../utils/analytics';
 
 /**
  * PUBLIC_INTERFACE
@@ -14,8 +15,14 @@ export function LessonDetail() {
 
   useEffect(() => {
     actions.fetchLessonById(id);
+    logLessonStarted({ lessonId: id, mode: 'standard' });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
+
+  const onMarkComplete = () => {
+    // domain-specific completion action can be added here
+    logLessonCompleted({ lessonId: id, success: true });
+  };
 
   return (
     <section aria-labelledby="lesson-title">
@@ -44,6 +51,11 @@ export function LessonDetail() {
           </article>
           <div style={{ marginTop: 12 }}>
             <Link to={`/lessons/${id}/quiz`} className="btn">Start Quiz</Link>
+          </div>
+          <div style={{ marginTop: 8 }}>
+            <button type="button" className="theme-toggle" style={{ position: 'static' }} onClick={onMarkComplete}>
+              Mark Complete
+            </button>
           </div>
           <div style={{ marginTop: 12 }}>
             <Link to="/lessons">Back to lessons</Link>

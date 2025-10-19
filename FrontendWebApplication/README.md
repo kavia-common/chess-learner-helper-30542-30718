@@ -258,6 +258,30 @@ Recommendations:
 - Prefetch lesson detail or next quiz when a user is likely to navigate there.
 - Minimize bundle size by keeping large dependencies out of initial render and leveraging lazy imports.
 
+## Analytics and Error Monitoring
+
+Analytics and error monitoring are disabled by default and include no third-party calls unless explicitly enabled.
+
+- Analytics
+  - No-op by default. Enable with REACT_APP_ENABLE_ANALYTICS=true to log non-PII events to the console provider.
+  - Page views are recorded on route changes automatically when enabled.
+  - Key events logged: lesson_started, lesson_completed, game_started, game_completed, quiz_submitted.
+  - Extend src/utils/analytics.js to integrate a real provider while keeping privacy-safe payloads.
+
+- Error Monitoring (optional Sentry)
+  - Enabled only when REACT_APP_SENTRY_DSN is set.
+  - Sentry is lazy-loaded to avoid bundle impact when disabled.
+  - beforeSend scrubs PII like user email/username/name and sensitive headers.
+
+Environment variables:
+- REACT_APP_ENABLE_ANALYTICS=false
+- REACT_APP_SENTRY_DSN=
+- REACT_APP_FEATURE_FLAGS=
+- REACT_APP_SENTRY_REPLAY=false
+- REACT_APP_SENTRY_TRACES_SAMPLE_RATE=0.1
+- REACT_APP_SENTRY_REPLAYS_SESSION_SAMPLE_RATE=0.0
+- REACT_APP_SENTRY_REPLAYS_ON_ERROR_SAMPLE_RATE=0.0
+
 ## Repository Structure
 
 - src/router/AppRouter.jsx: Routing map with guards and lazy loading

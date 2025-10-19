@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { logGameStarted, logGameCompleted } from '../../utils/analytics';
 import Spinner from '../../components/common/Spinner';
 import Skeleton from '../../components/common/Skeleton';
 import { handleApiError } from '../../utils/errorHandler';

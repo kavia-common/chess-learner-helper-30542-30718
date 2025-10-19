@@ -1,5 +1,6 @@
-import React, { Suspense, lazy } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import React, { Suspense, lazy, useEffect } from 'react';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { initAnalytics, initErrorMonitoring, trackPageView } from '../utils/analytics';
 import { ProtectedRoute } from '../components/common/ProtectedRoute';
 import RoleGuard from '../components/common/RoleGuard';
 import Spinner from '../components/common/Spinner';
@@ -51,9 +52,23 @@ const AuditLog = lazy(() => import('../pages/admin/AuditLog'));
  * - ProtectedRoute and RoleGuard still guard private/admin routes
  * - No functional changes to route paths
  */
+function RouteTracker() {
+  const location = useLocation();
+  useEffect(() => {
+    trackPageView(location.pathname, typeof document !== 'undefined' ? document.title : undefined);
+  }, [location]);
+  return null;
+}
+
 export function AppRouter() {
+  useEffect(() => {
+    initAnalytics();
+    initErrorMonitoring();
+  }, []);
+
   return (
     <Suspense fallback={<Spinner label="Loading page..." />}>
+      <RouteTracker />
       <Routes>
         {/* Public routes */}
         <Route path="/" element={<Home />} />
