@@ -6,6 +6,7 @@ import Sidebar from './components/common/Sidebar';
 import Footer from './components/common/Footer';
 import NotFound from './routes/NotFound';
 import { ROUTES } from './config/routes';
+import ProtectedRoute from './components/common/ProtectedRoute';
 
 // Simple placeholder pages for now
 function Home() {
@@ -51,10 +52,19 @@ export default function App() {
         <Route path={ROUTES.LESSONS} element={<Placeholder title="Lessons" />} />
         <Route path={ROUTES.QUIZZES} element={<Placeholder title="Quizzes" />} />
         <Route path={ROUTES.PRACTICE} element={<Placeholder title="Practice Games" />} />
-        <Route path={ROUTES.HISTORY} element={<Placeholder title="Game History" />} />
-        <Route path={ROUTES.CHALLENGES} element={<Placeholder title="Challenges" />} />
-        <Route path={ROUTES.PROFILE} element={<Placeholder title="Your Profile" />} />
-        <Route path={ROUTES.ADMIN} element={<Placeholder title="Admin Tools" />} />
+
+        {/* Protected user areas */}
+        <Route element={<ProtectedRoute />}>
+          <Route path={ROUTES.HISTORY} element={<Placeholder title="Game History" />} />
+          <Route path={ROUTES.CHALLENGES} element={<Placeholder title="Challenges" />} />
+          <Route path={ROUTES.PROFILE} element={<Placeholder title="Your Profile" />} />
+        </Route>
+
+        {/* Admin protected route with role example */}
+        <Route element={<ProtectedRoute roles={['admin']} />}>
+          <Route path={ROUTES.ADMIN} element={<Placeholder title="Admin Tools" />} />
+        </Route>
+
         <Route path="/home" element={<Navigate to={ROUTES.HOME} replace />} />
         <Route path={ROUTES.NOT_FOUND} element={<NotFound />} />
       </Route>
