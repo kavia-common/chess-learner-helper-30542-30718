@@ -17,6 +17,10 @@ import { Matchmaking } from '../pages/games/Matchmaking';
 import { RealtimeGame } from '../pages/games/RealtimeGame';
 import { GameHistory } from '../pages/history/GameHistory';
 import { GameReplay } from '../pages/history/GameReplay';
+import { DailyChallenge } from '../pages/gamification/DailyChallenge';
+import { Puzzles } from '../pages/gamification/Puzzles';
+import { Leaderboards } from '../pages/gamification/Leaderboards';
+import { Achievements } from '../pages/gamification/Achievements';
 
 /**
  * PUBLIC_INTERFACE
@@ -41,6 +45,10 @@ export function AppRouter() {
       <Route path="/games/realtime/:gameId" element={<RealtimeGame />} />
       <Route path="/history" element={<GameHistory />} />
       <Route path="/history/:gameId" element={<GameReplay />} />
+      <Route path="/challenges" element={<DailyChallenge />} />
+      <Route path="/puzzles" element={<Puzzles />} />
+      <Route path="/leaderboards" element={<Leaderboards />} />
+      <Route path="/achievements" element={<Achievements />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/verify-email" element={<VerifyEmail />} />

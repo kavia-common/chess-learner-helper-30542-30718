@@ -7,6 +7,7 @@ import { StoreProvider, initialState, rootReducer, authActions } from './store';
 import { LessonsProvider } from './store/lessons';
 import { GamesProvider } from './store/games';
 import { HistoryProvider } from './store/history';
+import { GamificationProvider } from './store/gamification';
 
 // PUBLIC_INTERFACE
 function App() {
@@ -47,7 +48,9 @@ function App() {
             <LessonsProvider>
               <GamesProvider>
                 <HistoryProvider>
-                  <AppRouter />
+                  <GamificationProvider>
+                    <AppRouter />
+                  </GamificationProvider>
                 </HistoryProvider>
               </GamesProvider>
             </LessonsProvider>

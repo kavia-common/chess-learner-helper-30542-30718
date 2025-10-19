@@ -10,6 +10,10 @@ export const ROUTES = {
   GAMES_AI: '/games/ai',
   GAMES_MATCH: '/games/match',
   GAMES_REALTIME: (id = ':gameId') => `/games/realtime/${id}`,
+  CHALLENGES: '/challenges',
+  PUZZLES: '/puzzles',
+  LEADERBOARDS: '/leaderboards',
+  ACHIEVEMENTS: '/achievements',
 };
 
 export const APP = {

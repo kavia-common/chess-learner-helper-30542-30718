@@ -25,6 +25,10 @@ export function Navbar() {
       <NavLink to="/games/ai" style={linkStyle}>Play vs AI</NavLink>
       <NavLink to="/games/match" style={linkStyle}>Matchmaking</NavLink>
       <NavLink to="/history" style={linkStyle}>History</NavLink>
+      <NavLink to="/challenges" style={linkStyle}>Daily</NavLink>
+      <NavLink to="/puzzles" style={linkStyle}>Puzzles</NavLink>
+      <NavLink to="/leaderboards" style={linkStyle}>Leaderboards</NavLink>
+      <NavLink to="/achievements" style={linkStyle}>Achievements</NavLink>
       <div style={{flex: 1}} />
       <NavLink to="/login" style={linkStyle}>Login</NavLink>
       <NavLink to="/register" style={linkStyle}>Register</NavLink>
