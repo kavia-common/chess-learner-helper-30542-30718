@@ -15,6 +15,8 @@ import { Quiz } from '../pages/lessons/Quiz';
 import { AIPlay } from '../pages/games/AIPlay';
 import { Matchmaking } from '../pages/games/Matchmaking';
 import { RealtimeGame } from '../pages/games/RealtimeGame';
+import { GameHistory } from '../pages/history/GameHistory';
+import { GameReplay } from '../pages/history/GameReplay';
 
 /**
  * PUBLIC_INTERFACE
@@ -37,6 +39,8 @@ export function AppRouter() {
       <Route path="/games/ai" element={<AIPlay />} />
       <Route path="/games/match" element={<Matchmaking />} />
       <Route path="/games/realtime/:gameId" element={<RealtimeGame />} />
+      <Route path="/history" element={<GameHistory />} />
+      <Route path="/history/:gameId" element={<GameReplay />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/verify-email" element={<VerifyEmail />} />

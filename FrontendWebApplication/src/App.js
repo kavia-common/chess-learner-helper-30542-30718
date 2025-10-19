@@ -6,6 +6,7 @@ import { ErrorBoundary } from './components/common/ErrorBoundary';
 import { StoreProvider, initialState, rootReducer, authActions } from './store';
 import { LessonsProvider } from './store/lessons';
 import { GamesProvider } from './store/games';
+import { HistoryProvider } from './store/history';
 
 // PUBLIC_INTERFACE
 function App() {
@@ -45,7 +46,9 @@ function App() {
           <ErrorBoundary>
             <LessonsProvider>
               <GamesProvider>
-                <AppRouter />
+                <HistoryProvider>
+                  <AppRouter />
+                </HistoryProvider>
               </GamesProvider>
             </LessonsProvider>
           </ErrorBoundary>
