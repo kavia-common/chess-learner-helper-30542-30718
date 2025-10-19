@@ -4,6 +4,7 @@ import { AppRouter } from './router/AppRouter';
 import { Navbar } from './components/common/Navbar';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
 import { StoreProvider, initialState, rootReducer, authActions } from './store';
+import { LessonsProvider } from './store/lessons';
 
 // PUBLIC_INTERFACE
 function App() {
@@ -12,6 +13,7 @@ function App() {
    * - Skip link for accessibility
    * - Navbar
    * - Router outlet wrapped by ErrorBoundary
+   * - LessonsProvider wraps routes to provide lessons/quiz/progress state
    */
   const [state, dispatch] = useReducer(rootReducer, initialState);
 
@@ -39,7 +41,9 @@ function App() {
         <Navbar />
         <main id="main" role="main" className="container" style={{ padding: '16px' }}>
           <ErrorBoundary>
-            <AppRouter />
+            <LessonsProvider>
+              <AppRouter />
+            </LessonsProvider>
           </ErrorBoundary>
         </main>
       </div>

@@ -9,12 +9,16 @@ import { VerifyEmail } from '../pages/auth/VerifyEmail';
 import { ForgotPassword } from '../pages/auth/ForgotPassword';
 import { ResetPassword } from '../pages/auth/ResetPassword';
 import { LinkAccounts } from '../pages/auth/LinkAccounts';
+import { LessonsList } from '../pages/lessons/LessonsList';
+import { LessonDetail } from '../pages/lessons/LessonDetail';
+import { Quiz } from '../pages/lessons/Quiz';
 
 /**
  * PUBLIC_INTERFACE
  * AppRouter defines the route map for the SPA with React Router v6.
  * Routes:
  * - "/" -> Home
+ * - Lessons: /lessons, /lessons/:id, /lessons/:id/quiz
  * - Auth routes: /login, /register, /verify-email, /forgot-password, /reset-password, /link-accounts
  * - "/dashboard" -> Example protected route (redirects to /login if unauthenticated)
  * - "*" -> NotFound
@@ -23,6 +27,9 @@ export function AppRouter() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
+      <Route path="/lessons" element={<LessonsList />} />
+      <Route path="/lessons/:id" element={<LessonDetail />} />
+      <Route path="/lessons/:id/quiz" element={<Quiz />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/verify-email" element={<VerifyEmail />} />

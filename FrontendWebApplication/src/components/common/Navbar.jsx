@@ -21,6 +21,7 @@ export function Navbar() {
       padding: '12px 16px', borderBottom: '1px solid var(--border-color)', background: 'var(--bg-secondary)'
     }}>
       <NavLink to="/" style={linkStyle} end>Home</NavLink>
+      <NavLink to="/lessons" style={linkStyle}>Lessons</NavLink>
       <div style={{flex: 1}} />
       <NavLink to="/login" style={linkStyle}>Login</NavLink>
       <NavLink to="/register" style={linkStyle}>Register</NavLink>
