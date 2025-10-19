@@ -20,7 +20,7 @@ import EditProfile from './routes/Profile/EditProfile';
 import LessonList from './routes/Lessons/LessonList';
 import LessonDetail from './routes/Lessons/LessonDetail';
 import Quiz from './routes/Lessons/Quiz';
-import { PlayAI } from './routes/Practice';
+import { PlayAI, PlayRealtime } from './routes/Practice';
 
 // Simple placeholder pages for now
 function Home() {
@@ -73,12 +73,13 @@ export default function App() {
               <p>Choose a practice mode:</p>
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                 <a className="btn" href={ROUTES.PRACTICE_AI} aria-label="Play versus AI">Play vs AI</a>
-                <button className="btn" disabled style={{ background: '#6c757d' }} aria-disabled="true">Multiplayer (coming soon)</button>
+                <a className="btn" href={ROUTES.PRACTICE_REALTIME} aria-label="Play realtime versus others">Realtime Play (beta)</a>
               </div>
             </div>
           </Placeholder>
         } />
         <Route path={ROUTES.PRACTICE_AI} element={<PlayAI />} />
+        <Route path={ROUTES.PRACTICE_REALTIME} element={<PlayRealtime />} />
 
         {/* Protected user areas */}
         <Route element={<ProtectedRoute />}>

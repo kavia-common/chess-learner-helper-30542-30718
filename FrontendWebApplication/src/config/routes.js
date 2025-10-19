@@ -5,6 +5,7 @@ export const ROUTES = {
   QUIZZES: '/quizzes',
   PRACTICE: '/practice',
   PRACTICE_AI: '/practice/ai',
+  PRACTICE_REALTIME: '/practice/realtime',
   HISTORY: '/history',
   CHALLENGES: '/challenges',
   PROFILE: '/profile',
