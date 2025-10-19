@@ -1,0 +1,90 @@
+:root {
+  --hc-bg-primary: #000000;
+  --hc-bg-secondary: #1a1a1a;
+  --hc-text-primary: #ffffff;
+  --hc-text-secondary: #ffff00;
+  --hc-border-color: #ffffff;
+  --hc-button-bg: #000000;
+  --hc-button-text: #ffff00;
+}
+
+/* Skip link styling */
+.skip-link {
+  position: absolute;
+  left: -10000px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+.skip-link:focus,
+.skip-link:focus-visible {
+  left: 8px;
+  top: 8px;
+  width: auto;
+  height: auto;
+  padding: 10px 14px;
+  background: #000;
+  color: #fff;
+  z-index: 1000;
+  border-radius: 6px;
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+}
+
+/* Focus outlines */
+:where(a, button, input, select, textarea, [role="button"], [tabindex])::selection {
+  background: rgba(13, 110, 253, 0.25);
+}
+
+:where(a, button, input, select, textarea, [role="button"], [tabindex]):focus-visible {
+  outline: 3px solid var(--text-secondary, #0d6efd);
+  outline-offset: 2px;
+}
+
+/* High contrast theme applied via data-contrast="high" on html root */
+html[data-contrast="high"] {
+  --bg-primary: var(--hc-bg-primary);
+  --bg-secondary: var(--hc-bg-secondary);
+  --text-primary: var(--hc-text-primary);
+  --text-secondary: var(--hc-text-secondary);
+  --border-color: var(--hc-border-color);
+  --button-bg: var(--hc-button-bg);
+  --button-text: var(--hc-button-text);
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Responsive navbar tweaks */
+.navbar {
+  flex-wrap: wrap;
+}
+@media (max-width: 768px) {
+  .navbar {
+    gap: 4px;
+  }
+  .navbar a, .navbar button {
+    padding: 6px 8px !important;
+  }
+}
+
+/* Utility class to visually hide but keep accessible */
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}

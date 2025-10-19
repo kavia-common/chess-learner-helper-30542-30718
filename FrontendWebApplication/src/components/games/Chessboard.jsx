@@ -104,11 +104,13 @@ export function Chessboard({ history = [], orientation = 'white', onMove }) {
   };
 
   return (
-    <div>
+    <div aria-label="Interactive chessboard" aria-describedby="chessboard-help">
       <div
         ref={gridRef}
         role="grid"
         aria-label="Chessboard"
+        aria-rowcount={8}
+        aria-colcount={8}
         tabIndex={0}
         onKeyDown={onKeyDown}
         style={{ display: 'grid', gridTemplateColumns: 'repeat(8, 1fr)', gap: 0, maxWidth: 480, outline: 'none' }}
@@ -125,6 +127,8 @@ export function Chessboard({ history = [], orientation = 'white', onMove }) {
                 role="gridcell"
                 aria-label={`Square ${label}${piece ? ` with ${describePiece(piece)}` : ''}`}
                 aria-selected={selected && selected.r === r && selected.c === c ? 'true' : 'false'}
+                aria-rowindex={r + 1}
+                aria-colindex={c + 1}
                 onClick={() => handleSquareSelect(r, c)}
                 onFocus={() => setFocus({ r, c })}
                 tabIndex={-1}
@@ -136,8 +140,8 @@ export function Chessboard({ history = [], orientation = 'white', onMove }) {
           });
         })}
       </div>
-      <div aria-hidden="true" style={{ marginTop: 8, fontSize: 12, color: 'var(--text-primary)' }}>
-        Use arrow keys to move focus. Press Enter/Space to select from and to squares.
+      <div id="chessboard-help" aria-live="polite" style={{ marginTop: 8, fontSize: 12, color: 'var(--text-primary)' }}>
+        Use arrow keys to move focus. Press Enter or Space to select from and to squares.
       </div>
     </div>
   );

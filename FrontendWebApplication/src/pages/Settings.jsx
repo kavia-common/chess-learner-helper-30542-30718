@@ -74,8 +74,9 @@ export function Settings() {
       <h1 id="settings-title">Settings</h1>
       {state.settings.loading && <div role="status">Loading settings…</div>}
       {state.settings.error && <div role="alert" style={{ color: 'crimson' }}>{state.settings.error}</div>}
+      <p id="settings-help" className="sr-only">Update your privacy, notifications, and consent preferences. Use Save settings to confirm changes.</p>
 
-      <form onSubmit={onSave}>
+      <form onSubmit={onSave} aria-labelledby="settings-title" aria-describedby="settings-help">
         <fieldset style={fsStyle}>
           <legend>Privacy</legend>
           <div style={rowStyle}>
