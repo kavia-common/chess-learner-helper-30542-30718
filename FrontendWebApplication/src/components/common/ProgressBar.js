@@ -1,11 +1,15 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
-// PUBLIC_INTERFACE
+/**
+ * PUBLIC_INTERFACE
+ * ProgressBar
+ * Accessible progress indicator. Provide value (current) and max (total).
+ */
 export default function ProgressBar({ value = 0, max = 100, label = 'Progress' }) {
   /** Accessible progress bar with ARIA attributes. */
   const clampedMax = Math.max(1, Number(max) || 1);
   const clampedValue = Math.min(Math.max(0, Number(value) || 0), clampedMax);
-  const pct = Math.round((clampedValue / clampedMax) * 100);
 
   return (
     <div
@@ -25,7 +29,7 @@ export default function ProgressBar({ value = 0, max = 100, label = 'Progress' }
     >
       <div
         style={{
-          width: `${pct}%`,
+          width: `${Math.round((clampedValue / clampedMax) * 100)}%`,
           height: '100%',
           background: 'var(--button-bg)',
           transition: 'width 200ms ease'
@@ -34,3 +38,8 @@ export default function ProgressBar({ value = 0, max = 100, label = 'Progress' }
     </div>
   );
 }
+ProgressBar.propTypes = {
+  value: PropTypes.number,
+  max: PropTypes.number,
+  label: PropTypes.string,
+};

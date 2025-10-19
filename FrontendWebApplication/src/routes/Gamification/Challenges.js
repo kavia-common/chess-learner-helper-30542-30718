@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { getDailyChallenge, submitChallengeResult, claimReward } from '../../services/challengeService';
 import ProgressBar from '../../components/common/ProgressBar';
 import Badge from '../../components/common/Badge';
+import EmptyState from '../../components/common/EmptyState';
 
 export default function Challenges() {
   const [loading, setLoading] = useState(true);
@@ -43,6 +44,17 @@ export default function Challenges() {
         <h1 id="ch-title">Daily Challenge</h1>
         <p className="text-muted">Sharpen your skills with a quick daily task.</p>
       </header>
+
+      {!challenge && (
+        <EmptyState
+          title="No challenges available"
+          message="Please check back later for new challenges."
+          actionText="Refresh"
+          onAction={() => window.location.reload()}
+          icon="🏆"
+          aria-label="Empty challenges"
+        />
+      )}
 
       {challenge && (
         <section className="card" aria-label="Challenge Details">

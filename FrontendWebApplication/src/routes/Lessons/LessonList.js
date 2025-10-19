@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import ProgressBar from '../../components/common/ProgressBar';
+import Skeleton from '../../components/common/Skeleton';
+import EmptyState from '../../components/common/EmptyState';
 import { listLessons } from '../../services/lessonService';
 import { ROUTES } from '../../config/routes';
 
 // PUBLIC_INTERFACE
 export default function LessonList() {
   /** Lists available lessons with progress and links to details. */
-  const [lessons, setLessons] = useState([]);
+  const [lessons, setLessons] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -26,7 +28,32 @@ export default function LessonList() {
   }, []);
 
   if (loading) {
-    return <div className="page"><p>Loading lessons…</p></div>;
+    return (
+      <div className="page">
+        <h1>Lessons</h1>
+        <div style={{ display: 'grid', gap: '0.5rem' }}>
+          <Skeleton height="1.25rem" />
+          <Skeleton height="1.25rem" />
+          <Skeleton height="1.25rem" />
+        </div>
+      </div>
+    );
+  }
+
+  if (Array.isArray(lessons) && lessons.length === 0) {
+    return (
+      <div className="page">
+        <h1>Lessons</h1>
+        <EmptyState
+          title="No lessons yet"
+          message="Check back later or try refreshing."
+          actionText="Refresh"
+          onAction={() => window.location.reload()}
+          icon="📚"
+          aria-label="Empty lessons list"
+        />
+      </div>
+    );
   }
 
   return (

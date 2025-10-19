@@ -1,31 +1,32 @@
 import React from 'react';
-import { Navigate, Outlet, useLocation } from 'react-router-dom';
+import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { ROUTES } from '../../config/routes';
 
-// PUBLIC_INTERFACE
+/**
+ * PUBLIC_INTERFACE
+ * ProtectedRoute
+ * Protects routes by ensuring the user is authenticated and (optionally) has a required role.
+ * Usage:
+ *  <Route element={<ProtectedRoute roles={['admin']} />}> ... </Route>
+ */
 export default function ProtectedRoute({ roles }) {
-  /**
-   * Route guard to protect authenticated pages.
-   * - If not authenticated, redirect to home (or login when available) with state.from.
-   * - If roles is provided, enforce role-based access (user.role).
-   */
-  const { user, initializing } = useAuth();
-  const location = useLocation();
+  const { user, loading } = useAuth();
 
-  if (initializing) {
-    return <div className="page"><p>Loading...</p></div>;
+  if (loading) {
+    return (
+      <div role="status" aria-live="polite" aria-label="Loading protected content">
+        Loading...
+      </div>
+    );
   }
 
   if (!user) {
-    return <Navigate to={ROUTES.HOME} replace state={{ from: location }} />;
+    return <Navigate to="/auth/login" replace />;
   }
 
-  if (roles && roles.length > 0) {
-    const userRole = user?.role || 'user';
-    if (!roles.includes(userRole)) {
-      return <Navigate to={ROUTES.HOME} replace />;
-    }
+  if (Array.isArray(roles) && roles.length > 0) {
+    const ok = roles.includes(user.role);
+    if (!ok) return <Navigate to="/" replace />;
   }
 
   return <Outlet />;

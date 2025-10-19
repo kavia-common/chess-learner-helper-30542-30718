@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ROUTES } from '../../config/routes';
 import { summarizeGame } from '../../utils/pgn';
+import EmptyState from '../../components/common/EmptyState';
 
 // Mock-safe history entries (works without backend)
 const MOCK_GAMES = [
@@ -98,6 +99,19 @@ export default function HistoryList() {
           </select>
         </div>
       </header>
+
+      {filtered.length === 0 && (
+        <div style={{ marginTop: 16 }}>
+          <EmptyState
+            title="No games match your filters"
+            message="Try adjusting your filters or play a new game to see it here."
+            actionText="Play AI"
+            onAction={() => (window.location.href = '/practice/ai')}
+            icon="🕰️"
+            aria-label="Empty game history list"
+          />
+        </div>
+      )}
 
       <section style={{ marginTop: 16, display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 12 }}>
         {filtered.map((g) => {

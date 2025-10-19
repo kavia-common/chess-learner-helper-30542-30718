@@ -7,7 +7,8 @@ import Footer from './components/common/Footer';
 import NotFound from './routes/NotFound';
 import { ROUTES } from './config/routes';
 import ProtectedRoute from './components/common/ProtectedRoute';
-
+import ErrorBoundary from './components/common/ErrorBoundary';
+import { useToast } from './context/ToastContext';
 import Login from './routes/Auth/Login';
 import Register from './routes/Auth/Register';
 import VerifyEmail from './routes/Auth/VerifyEmail';
@@ -42,19 +43,31 @@ function Home() {
   );
 }
 
-// Layout with navbar, sidebar, main content outlet, and footer
+/**
+ * ToastMount renders a live region container so announcements are consistent.
+ * The actual toasts are rendered in ToastProvider; this component provides a spot to move focus if needed.
+ */
+function ToastMount() {
+  const { /* eslint-disable no-unused-vars */ showToast } = useToast();
+  return <div aria-live="polite" aria-atomic="true" style={{ position: 'absolute', inset: '-9999px' }} />;
+}
+
+// Layout with navbar, sidebar, main content outlet, and footer wrapped in ErrorBoundary
 function AppLayout() {
   return (
-    <div className="app-shell">
-      <Navbar />
-      <div className="app-body">
-        <Sidebar />
-        <main className="app-content" id="main-content" role="main">
-          <Outlet />
-        </main>
+    <ErrorBoundary>
+      <div className="app-shell">
+        <Navbar />
+        <div className="app-body">
+          <Sidebar />
+          <main className="app-content" id="main-content" role="main" tabIndex={-1}>
+            <Outlet />
+          </main>
+        </div>
+        <Footer />
+        <ToastMount />
       </div>
-      <Footer />
-    </div>
+    </ErrorBoundary>
   );
 }
 
