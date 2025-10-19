@@ -206,3 +206,11 @@
     max-width: 100% !important;
   }
 }
+
+/* Practice AI helpers */
+.practice-ai-grid {
+  /* base grid defined inline, this is a hook for additional theming if needed */
+}
+.practice-ai-controls {
+  /* hook for timer bar styling */
+}

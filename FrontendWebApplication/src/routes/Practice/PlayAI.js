@@ -1,151 +1,19 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { ROUTES } from '../../config/routes';
 import { Link } from 'react-router-dom';
 import {
   createInitialState,
   toAlgebraic,
-  fromAlgebraic,
   getLegalMoves,
   makeMove,
   generateMoves,
   isCheck,
-  isCheckmate,
-  isStalemate,
   aiChooseMove,
 } from '../../utils/chessEngine';
-
-// Square component for a single board cell
-function Square({ isDark, piece, focused, selectable, onClick, onKeyDown, coords, isLastMove, isLegalTarget }) {
-  const bg = isDark ? 'var(--bg-secondary)' : 'var(--bg-primary)';
-  const border = focused ? '2px solid var(--button-bg)' : '1px solid var(--border-color)';
-  const outline = isLastMove ? '2px solid #7bb0ff' : 'none';
-  const highlight = isLegalTarget ? 'inset 0 0 0 3px rgba(43,134,255,0.4)' : 'none';
-
-  const label = piece ? `${pieceLabel(piece)} on ${coords}` : `Empty ${coords}`;
-
-  return (
-    <button
-      aria-label={label + (selectable ? ' selectable' : '')}
-      role="gridcell"
-      onClick={onClick}
-      onKeyDown={onKeyDown}
-      tabIndex={0}
-      style={{
-        width: '100%',
-        aspectRatio: '1 / 1',
-        background: bg,
-        color: 'var(--text-primary)',
-        border,
-        outline,
-        position: 'relative',
-        cursor: 'pointer'
-      }}
-      data-coords={coords}
-    >
-      {piece && (
-        <span style={{ fontSize: 'min(5.2vw, 36px)' }} aria-hidden="true">
-          {unicodePiece(piece)}
-        </span>
-      )}
-      {isLegalTarget && (
-        <span aria-hidden="true" style={{
-          position: 'absolute',
-          inset: 4,
-          borderRadius: 6,
-          boxShadow: highlight
-        }} />
-      )}
-    </button>
-  );
-}
-
-function unicodePiece(p) {
-  const map = {
-    'K':'♔','Q':'♕','R':'♖','B':'♗','N':'♘','P':'♙',
-    'k':'♚','q':'♛','r':'♜','b':'♝','n':'♞','p':'♟︎'
-  };
-  return map[p] || '·';
-}
-function pieceLabel(p) {
-  const m = { K:'White King', Q:'White Queen', R:'White Rook', B:'White Bishop', N:'White Knight', P:'White Pawn',
-              k:'Black King', q:'Black Queen', r:'Black Rook', b:'Black Bishop', n:'Black Knight', p:'Black Pawn' };
-  return m[p] || 'Piece';
-}
-
-// Move list component
-function MoveList({ history }) {
-  return (
-    <div aria-label="Move list" role="region" style={{ maxHeight: 220, overflow: 'auto', border: '1px solid var(--border-color)', borderRadius: 8, padding: 8 }}>
-      <ol style={{ margin: 0, paddingLeft: 18 }}>
-        {history.map((m, idx) => {
-          const san = formatMoveSAN(m);
-          return <li key={`${m.from.join(',')}-${m.to.join(',')}-${idx}`}>{san}</li>;
-        })}
-      </ol>
-    </div>
-  );
-}
-function formatMoveSAN(m) {
-  const from = toAlgebraic(m.from[0], m.from[1]);
-  const to = toAlgebraic(m.to[0], m.to[1]);
-  const cap = m.capture ? 'x' : '-';
-  const promo = m.promotion ? `=${String(m.promotion).toUpperCase()}` : '';
-  const castle = m.castle ? (m.castle === 'K' ? 'O-O' : 'O-O-O') : '';
-  if (castle) return castle;
-  return `${m.piece?.toUpperCase() === 'P' ? '' : m.piece?.toUpperCase() || ''}${from}${cap}${to}${promo}`;
-}
-
-// Hint panel component
-function HintPanel({ onHint, disabled, difficulty }) {
-  return (
-    <div role="region" aria-label="Hints" style={{ border: '1px solid var(--border-color)', borderRadius: 8, padding: 8 }}>
-      <div style={{ marginBottom: 6, fontWeight: 600 }}>Hints</div>
-      <p style={{ marginTop: 0, fontSize: 14, color: 'var(--text-secondary)' }}>
-        Get a suggestion for your next move. Hints consider current difficulty.
-      </p>
-      <button className="btn small" onClick={onHint} disabled={disabled} aria-busy={disabled}>
-        {disabled ? 'Thinking…' : `Get hint (${difficulty})`}
-      </button>
-    </div>
-  );
-}
-
-// Simple timer component for each side
-function Timer({ running, initial = 5 * 60, onTimeout, label }) {
-  const [secs, setSecs] = useState(initial);
-  const prevRunning = useRef(running);
-
-  useEffect(() => {
-    let id;
-    if (running) {
-      id = setInterval(() => {
-        setSecs((s) => {
-          if (s <= 1) {
-            clearInterval(id);
-            onTimeout?.();
-            return 0;
-          }
-          return s - 1;
-        });
-      }, 1000);
-    }
-    return () => clearInterval(id);
-  }, [running, onTimeout]);
-
-  useEffect(() => {
-    // reset when toggled from false to true after a complete game reset could be handled externally if needed
-    prevRunning.current = running;
-  }, [running]);
-
-  const mm = String(Math.floor(secs / 60)).padStart(2, '0');
-  const ss = String(secs % 60).padStart(2, '0');
-
-  return (
-    <div aria-live="polite" aria-label={`${label} timer`} style={{ fontVariantNumeric: 'tabular-nums' }}>
-      {label}: {mm}:{ss}
-    </div>
-  );
-}
+import Board from '../../components/chess/Board';
+import MoveList from '../../components/chess/MoveList';
+import HintPanel from '../../components/chess/HintPanel';
+import Timer from '../../components/chess/Timer';
 
 // PUBLIC_INTERFACE
 export default function PlayAI() {
@@ -189,8 +57,9 @@ export default function PlayAI() {
       if (result) return;
       if (turn === 'b') {
         setBusy(true);
-        // small delay to emulate thinking
-        await new Promise(r => setTimeout(r, 200));
+        // emulate thinking latency based on difficulty
+        const latency = difficulty === 'advanced' ? 350 : difficulty === 'intermediate' ? 250 : 150;
+        await new Promise(r => setTimeout(r, latency));
         const mv = aiChooseMove(state, difficulty);
         if (!cancelled && mv) {
           const ns = makeMove(state, mv);
@@ -215,6 +84,11 @@ export default function PlayAI() {
     setResult(null);
   }
 
+  function pieceColorForTurn(p) {
+    if (!p) return null;
+    return p === p.toUpperCase() ? 'w' : 'b';
+  }
+
   function onSquareClick(r, c) {
     if (result) return;
     if (busy) return;
@@ -224,10 +98,9 @@ export default function PlayAI() {
       const legal = legalTargets.find(([rr,cc]) => rr === r && cc === c);
       if (legal) {
         const from = selected;
-        const fromPiece = board[from[0]][from[1]];
         const all = getLegalMoves(state, from);
         const move = all.find(m => m.to[0] === r && m.to[1] === c);
-        if (move && ((turn === 'w' && fromPiece && fromPiece === board[from[0]][from[1]]) || true)) {
+        if (move) {
           const ns = makeMove(state, move);
           setState(ns);
           setLastMove(move);
@@ -255,15 +128,11 @@ export default function PlayAI() {
     }
   }
 
-  function pieceColorForTurn(p) {
-    if (!p) return null;
-    return p === p.toUpperCase() ? 'w' : 'b';
-  }
-
   function onKeyDownSquare(e, r, c) {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
       onSquareClick(r, c);
+      return;
     }
     // Arrow key navigation across grid
     let nr = r, nc = c;
@@ -299,13 +168,6 @@ export default function PlayAI() {
     }
   }
 
-  const lastMoveSquares = useMemo(() => {
-    if (!lastMove) return new Set();
-    const a = toAlgebraic(lastMove.from[0], lastMove.from[1]);
-    const b = toAlgebraic(lastMove.to[0], lastMove.to[1]);
-    return new Set([a,b]);
-  }, [lastMove]);
-
   function onTimeout(side) {
     if (result) return;
     setResult(`${side} time out`);
@@ -330,43 +192,19 @@ export default function PlayAI() {
         </div>
       </header>
 
-      <section style={{ marginTop: 16, display: 'grid', gridTemplateColumns: '1fr 320px', gap: 16 }}>
+      <section className="practice-ai-grid" style={{ marginTop: 16, display: 'grid', gridTemplateColumns: '1fr 320px', gap: 16 }}>
         <div>
-          <div role="grid" aria-label="Chess board" style={{
-            width: '100%',
-            maxWidth: 520,
-            aspectRatio: '1 / 1',
-            display: 'grid',
-            gridTemplateColumns: 'repeat(8, 1fr)',
-            gridTemplateRows: 'repeat(8, 1fr)',
-            border: '1px solid var(--border-color)',
-            borderRadius: 8,
-            overflow: 'hidden'
-          }}>
-            {board.map((row, r) => row.map((piece, c) => {
-              const dark = (r + c) % 2 === 1;
-              const coords = toAlgebraic(r, c);
-              const isLast = lastMoveSquares.has(coords);
-              const isLegalT = legalTargets.some(([rr,cc]) => rr === r && cc === c);
-              const isFocused = selected && selected[0] === r && selected[1] === c;
-              return (
-                <Square
-                  key={coords}
-                  isDark={dark}
-                  piece={piece}
-                  focused={isFocused}
-                  selectable={piece && pieceColorForTurn(piece) === turn}
-                  onClick={() => onSquareClick(r, c)}
-                  onKeyDown={(e) => onKeyDownSquare(e, r, c)}
-                  coords={coords}
-                  isLastMove={isLast}
-                  isLegalTarget={isLegalT}
-                />
-              );
-            }))}
-          </div>
+          <Board
+            board={board}
+            selected={selected}
+            legalTargets={legalTargets}
+            lastMove={lastMove}
+            turn={turn}
+            onSquareClick={onSquareClick}
+            onSquareKeyDown={onKeyDownSquare}
+          />
 
-          <div style={{ marginTop: 12, display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+          <div className="practice-ai-controls" style={{ marginTop: 12, display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
             <Timer label="White" running={!result && turn === 'w'} onTimeout={() => onTimeout('White')} />
             <Timer label="Black" running={!result && turn === 'b'} onTimeout={() => onTimeout('Black')} />
             <div aria-live="polite" style={{ marginLeft: 'auto' }}>
@@ -387,8 +225,8 @@ export default function PlayAI() {
       {/* Responsive stack for small screens */}
       <style>{`
         @media (max-width: 900px) {
-          section {
-            grid-template-columns: 1fr;
+          .practice-ai-grid {
+            grid-template-columns: 1fr !important;
           }
         }
       `}</style>
