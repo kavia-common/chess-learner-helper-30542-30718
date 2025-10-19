@@ -1,49 +1,63 @@
-import React, { useState, useEffect } from 'react';
-import logo from './logo.svg';
+import React from 'react';
+import { Routes, Route, Outlet, Navigate } from 'react-router-dom';
 import './App.css';
+import Navbar from './components/common/Navbar';
+import Sidebar from './components/common/Sidebar';
+import Footer from './components/common/Footer';
+import NotFound from './routes/NotFound';
+import { ROUTES } from './config/routes';
 
-// PUBLIC_INTERFACE
-function App() {
-  const [theme, setTheme] = useState('light');
-
-  // Effect to apply theme to document element
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-  }, [theme]);
-
-  // PUBLIC_INTERFACE
-  const toggleTheme = () => {
-    setTheme(prevTheme => prevTheme === 'light' ? 'dark' : 'light');
-  };
-
+// Simple placeholder pages for now
+function Home() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <button 
-          className="theme-toggle" 
-          onClick={toggleTheme}
-          aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
-        >
-          {theme === 'light' ? '🌙 Dark' : '☀️ Light'}
-        </button>
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <p>
-          Current theme: <strong>{theme}</strong>
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="page">
+      <h1>Welcome to Chess Learner Helper</h1>
+      <p>Start your journey with lessons, quizzes, and practice games.</p>
+    </div>
+  );
+}
+function Placeholder({ title }) {
+  return (
+    <div className="page">
+      <h2>{title}</h2>
+      <p>Content coming soon.</p>
     </div>
   );
 }
 
-export default App;
+// Layout with navbar, sidebar, main content outlet, and footer
+function AppLayout() {
+  return (
+    <div className="app-shell">
+      <Navbar />
+      <div className="app-body">
+        <Sidebar />
+        <main className="app-content" id="main-content" role="main">
+          <Outlet />
+        </main>
+      </div>
+      <Footer />
+    </div>
+  );
+}
+
+// PUBLIC_INTERFACE
+export default function App() {
+  /** Root application shell providing routes and layout. */
+  return (
+    <Routes>
+      <Route element={<AppLayout />}>
+        <Route index element={<Home />} />
+        <Route path={ROUTES.LESSONS} element={<Placeholder title="Lessons" />} />
+        <Route path={ROUTES.QUIZZES} element={<Placeholder title="Quizzes" />} />
+        <Route path={ROUTES.PRACTICE} element={<Placeholder title="Practice Games" />} />
+        <Route path={ROUTES.HISTORY} element={<Placeholder title="Game History" />} />
+        <Route path={ROUTES.CHALLENGES} element={<Placeholder title="Challenges" />} />
+        <Route path={ROUTES.PROFILE} element={<Placeholder title="Your Profile" />} />
+        <Route path={ROUTES.ADMIN} element={<Placeholder title="Admin Tools" />} />
+        <Route path="/home" element={<Navigate to={ROUTES.HOME} replace />} />
+        <Route path={ROUTES.NOT_FOUND} element={<NotFound />} />
+      </Route>
+    </Routes>
+  );
+}
