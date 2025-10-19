@@ -21,6 +21,8 @@ import { DailyChallenge } from '../pages/gamification/DailyChallenge';
 import { Puzzles } from '../pages/gamification/Puzzles';
 import { Leaderboards } from '../pages/gamification/Leaderboards';
 import { Achievements } from '../pages/gamification/Achievements';
+import { Profile } from '../pages/Profile';
+import { Settings } from '../pages/Settings';
 
 /**
  * PUBLIC_INTERFACE
@@ -49,6 +51,22 @@ export function AppRouter() {
       <Route path="/puzzles" element={<Puzzles />} />
       <Route path="/leaderboards" element={<Leaderboards />} />
       <Route path="/achievements" element={<Achievements />} />
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/settings"
+        element={
+          <ProtectedRoute>
+            <Settings />
+          </ProtectedRoute>
+        }
+      />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/verify-email" element={<VerifyEmail />} />

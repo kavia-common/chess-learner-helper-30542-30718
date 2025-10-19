@@ -1,5 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
+import { useStore, authActions } from '../../store';
 
 /**
  * PUBLIC_INTERFACE
@@ -7,6 +8,9 @@ import { NavLink } from 'react-router-dom';
  * Includes simple focus-visible styles for accessibility.
  */
 export function Navbar() {
+  const { state, dispatch } = useStore();
+  const doLogout = authActions.logout(dispatch);
+
   const linkStyle = ({ isActive }) => ({
     color: isActive ? 'var(--text-secondary)' : 'var(--text-primary)',
     textDecoration: 'none',
@@ -14,6 +18,8 @@ export function Navbar() {
     borderRadius: '6px',
     outlineOffset: '3px'
   });
+
+  const authed = Boolean(state?.auth?.isAuthenticated);
 
   return (
     <nav className="navbar" role="navigation" aria-label="Main Navigation" style={{
@@ -30,8 +36,32 @@ export function Navbar() {
       <NavLink to="/leaderboards" style={linkStyle}>Leaderboards</NavLink>
       <NavLink to="/achievements" style={linkStyle}>Achievements</NavLink>
       <div style={{flex: 1}} />
-      <NavLink to="/login" style={linkStyle}>Login</NavLink>
-      <NavLink to="/register" style={linkStyle}>Register</NavLink>
+      {authed ? (
+        <>
+          <NavLink to="/profile" style={linkStyle}>Profile</NavLink>
+          <NavLink to="/settings" style={linkStyle}>Settings</NavLink>
+          <button
+            type="button"
+            onClick={async ()=>{ await doLogout(); }}
+            style={{
+              padding: '8px 12px',
+              borderRadius: '6px',
+              border: '1px solid var(--border-color)',
+              background: 'var(--bg-secondary)',
+              color: 'var(--text-primary)',
+              cursor: 'pointer'
+            }}
+            aria-label="Log out"
+          >
+            Logout
+          </button>
+        </>
+      ) : (
+        <>
+          <NavLink to="/login" style={linkStyle}>Login</NavLink>
+          <NavLink to="/register" style={linkStyle}>Register</NavLink>
+        </>
+      )}
     </nav>
   );
 }

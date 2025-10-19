@@ -8,6 +8,7 @@ import { LessonsProvider } from './store/lessons';
 import { GamesProvider } from './store/games';
 import { HistoryProvider } from './store/history';
 import { GamificationProvider } from './store/gamification';
+import { UserProvider } from './store/user';
 
 // PUBLIC_INTERFACE
 function App() {
@@ -49,7 +50,9 @@ function App() {
               <GamesProvider>
                 <HistoryProvider>
                   <GamificationProvider>
-                    <AppRouter />
+                    <UserProvider>
+                      <AppRouter />
+                    </UserProvider>
                   </GamificationProvider>
                 </HistoryProvider>
               </GamesProvider>

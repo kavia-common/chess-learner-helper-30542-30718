@@ -14,6 +14,8 @@ export const ROUTES = {
   PUZZLES: '/puzzles',
   LEADERBOARDS: '/leaderboards',
   ACHIEVEMENTS: '/achievements',
+  PROFILE: '/profile',
+  SETTINGS: '/settings',
 };
 
 export const APP = {
