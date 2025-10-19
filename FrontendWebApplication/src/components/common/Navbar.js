@@ -19,10 +19,13 @@ export default function Navbar() {
       </div>
       <ul className="navbar-links">
         <li><Link to={ROUTES.LESSONS}>Lessons</Link></li>
-        <li><Link to={ROUTES.QUIZZES}>Quizzes</Link></li>
         <li><Link to={ROUTES.PRACTICE}>Practice</Link></li>
-        <li><Link to={ROUTES.HISTORY}>History</Link></li>
+        <li><Link to={ROUTES.PUZZLES}>Puzzles</Link></li>
         <li><Link to={ROUTES.CHALLENGES}>Challenges</Link></li>
+        <li><Link to={ROUTES.TIMED_QUIZZES}>Timed Quizzes</Link></li>
+        <li><Link to={ROUTES.LEADERBOARDS}>Leaderboards</Link></li>
+        <li><Link to={ROUTES.ACHIEVEMENTS}>Achievements</Link></li>
+        <li><Link to={ROUTES.HISTORY}>History</Link></li>
         {user && <li><Link to={ROUTES.PROFILE}>Profile</Link></li>}
       </ul>
       <div className="navbar-actions">

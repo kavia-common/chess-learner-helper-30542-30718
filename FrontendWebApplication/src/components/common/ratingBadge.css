@@ -1,0 +1,18 @@
+.rb {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  color: #f59e0b; /* amber */
+}
+
+.rb.sm .rb-star { font-size: 0.85rem; }
+.rb.md .rb-star { font-size: 1rem; }
+.rb.lg .rb-star { font-size: 1.25rem; }
+
+.rb-star--full { color: #f59e0b; }
+.rb-star--half {
+  background: linear-gradient(90deg, #f59e0b 50%, #e5e7eb 50%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.rb-star--empty { color: #e5e7eb; }

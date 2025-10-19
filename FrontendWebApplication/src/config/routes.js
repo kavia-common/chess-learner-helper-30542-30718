@@ -7,9 +7,15 @@ export const ROUTES = {
   PRACTICE_AI: '/practice/ai',
   PRACTICE_REALTIME: '/practice/realtime',
   HISTORY: '/history',
-  CHALLENGES: '/challenges',
   PROFILE: '/profile',
   ADMIN: '/admin',
+
+  // Gamification
+  CHALLENGES: '/challenges',
+  PUZZLES: '/puzzles',
+  TIMED_QUIZZES: '/quizzes/timed',
+  LEADERBOARDS: '/leaderboards',
+  ACHIEVEMENTS: '/achievements',
 
   // Auth routes
   LOGIN: '/auth/login',
@@ -22,3 +28,5 @@ export const ROUTES = {
 
   NOT_FOUND: '*'
 };
+
+export default ROUTES;

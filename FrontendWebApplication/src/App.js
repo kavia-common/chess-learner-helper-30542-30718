@@ -25,20 +25,19 @@ import HistoryList from './routes/History/HistoryList';
 import GameReplay from './routes/History/GameReplay';
 import Analysis from './routes/History/Analysis';
 
-// Simple placeholder pages for now
+// Gamification pages
+import Challenges from './routes/Gamification/Challenges';
+import Puzzles from './routes/Gamification/Puzzles';
+import TimedQuizzes from './routes/Gamification/TimedQuizzes';
+import Leaderboards from './routes/Gamification/Leaderboards';
+import Achievements from './routes/Gamification/Achievements';
+
+// Simple home page
 function Home() {
   return (
     <div className="page">
       <h1>Welcome to Chess Learner Helper</h1>
-      <p>Start your journey with lessons, quizzes, and practice games.</p>
-    </div>
-  );
-}
-function Placeholder({ title, children }) {
-  return (
-    <div className="page">
-      <h2>{title}</h2>
-      {children || <p>Content coming soon.</p>}
+      <p>Start your journey with lessons, quizzes, practice, and gamified challenges.</p>
     </div>
   );
 }
@@ -66,30 +65,34 @@ export default function App() {
     <Routes>
       <Route element={<AppLayout />}>
         <Route index element={<Home />} />
+
+        {/* Core learning routes */}
         <Route path={ROUTES.LESSONS} element={<LessonList />} />
         <Route path={`${ROUTES.LESSONS}/:lessonId`} element={<LessonDetail />} />
-        <Route path={ROUTES.QUIZZES} element={<Placeholder title="Quizzes" />} />
+        <Route path={ROUTES.QUIZZES} element={<LessonList />} />
         <Route path={`${ROUTES.QUIZZES}/:lessonId`} element={<Quiz />} />
-        <Route path={ROUTES.PRACTICE} element={
-          <Placeholder title="Practice">
-            <div style={{ display: 'grid', gap: 8, marginTop: 12 }}>
-              <p>Choose a practice mode:</p>
-              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                <a className="btn" href={ROUTES.PRACTICE_AI} aria-label="Play versus AI">Play vs AI</a>
-                <a className="btn" href={ROUTES.PRACTICE_REALTIME} aria-label="Play realtime versus others">Realtime Play (beta)</a>
-              </div>
-            </div>
-          </Placeholder>
-        } />
+
+        {/* Practice */}
+        <Route path={ROUTES.PRACTICE} element={<div className="page"><h2>Practice</h2></div>} />
         <Route path={ROUTES.PRACTICE_AI} element={<PlayAI />} />
         <Route path={ROUTES.PRACTICE_REALTIME} element={<PlayRealtime />} />
+
+        {/* Public gamification */}
+        <Route path={ROUTES.LEADERBOARDS} element={<Leaderboards />} />
 
         {/* Protected user areas */}
         <Route element={<ProtectedRoute />}>
           <Route path={ROUTES.HISTORY} element={<HistoryList />} />
           <Route path={`${ROUTES.HISTORY}/replay/:gameId`} element={<GameReplay />} />
           <Route path={`${ROUTES.HISTORY}/analysis/:gameId`} element={<Analysis />} />
-          <Route path={ROUTES.CHALLENGES} element={<Placeholder title="Challenges" />} />
+
+          {/* Gamification (requires auth for personalized progress) */}
+          <Route path={ROUTES.CHALLENGES} element={<Challenges />} />
+          <Route path={ROUTES.PUZZLES} element={<Puzzles />} />
+          <Route path={ROUTES.TIMED_QUIZZES} element={<TimedQuizzes />} />
+          <Route path={ROUTES.ACHIEVEMENTS} element={<Achievements />} />
+
+          {/* Profile and onboarding */}
           <Route path={ROUTES.PROFILE} element={<Profile />} />
           <Route path={`${ROUTES.PROFILE}/edit`} element={<EditProfile />} />
           <Route path={ROUTES.ONBOARDING} element={<Onboarding />} />
@@ -97,7 +100,7 @@ export default function App() {
 
         {/* Admin protected route with role example */}
         <Route element={<ProtectedRoute roles={['admin']} />}>
-          <Route path={ROUTES.ADMIN} element={<Placeholder title="Admin Tools" />} />
+          <Route path={ROUTES.ADMIN} element={<div className="page"><h2>Admin Tools</h2></div>} />
         </Route>
 
         {/* Auth routes (public) */}
@@ -106,6 +109,7 @@ export default function App() {
         <Route path={ROUTES.VERIFY_EMAIL} element={<VerifyEmail />} />
         <Route path={ROUTES.RESET_PASSWORD} element={<ResetPassword />} />
 
+        {/* Redirects and 404 */}
         <Route path="/home" element={<Navigate to={ROUTES.HOME} replace />} />
         <Route path={ROUTES.NOT_FOUND} element={<NotFound />} />
       </Route>

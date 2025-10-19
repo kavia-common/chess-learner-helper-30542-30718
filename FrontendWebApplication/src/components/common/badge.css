@@ -1,0 +1,23 @@
+.clh-badge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  line-height: 1;
+  font-weight: 600;
+  border: 1px solid transparent;
+  margin: 0 0.25rem 0.25rem 0;
+}
+
+.clh-badge:focus {
+  outline: 2px dashed var(--focus-color, #334155);
+  outline-offset: 2px;
+}
+
+.clh-badge--default { background: #f1f5f9; color: #0f172a; border-color: #e2e8f0; }
+.clh-badge--success { background: #ecfdf5; color: #065f46; border-color: #a7f3d0; }
+.clh-badge--warning { background: #fffbeb; color: #92400e; border-color: #fde68a; }
+.clh-badge--danger  { background: #fef2f2; color: #991b1b; border-color: #fecaca; }
+.clh-badge--info    { background: #eff6ff; color: #1e40af; border-color: #bfdbfe; }
+.clh-badge--primary { background: #eef2ff; color: #3730a3; border-color: #c7d2fe; }
+.clh-badge--secondary { background: #f8fafc; color: #334155; border-color: #cbd5e1; }
