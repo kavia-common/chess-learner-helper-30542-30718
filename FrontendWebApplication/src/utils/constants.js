@@ -7,6 +7,9 @@ export const ROUTES = {
   RESET_PASSWORD: '/reset-password',
   LINK_ACCOUNTS: '/link-accounts',
   DASHBOARD: '/dashboard',
+  GAMES_AI: '/games/ai',
+  GAMES_MATCH: '/games/match',
+  GAMES_REALTIME: (id = ':gameId') => `/games/realtime/${id}`,
 };
 
 export const APP = {

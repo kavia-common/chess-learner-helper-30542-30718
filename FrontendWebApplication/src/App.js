@@ -5,6 +5,7 @@ import { Navbar } from './components/common/Navbar';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
 import { StoreProvider, initialState, rootReducer, authActions } from './store';
 import { LessonsProvider } from './store/lessons';
+import { GamesProvider } from './store/games';
 
 // PUBLIC_INTERFACE
 function App() {
@@ -14,6 +15,7 @@ function App() {
    * - Navbar
    * - Router outlet wrapped by ErrorBoundary
    * - LessonsProvider wraps routes to provide lessons/quiz/progress state
+   * - GamesProvider provides AI/Matchmaking/Realtime state
    */
   const [state, dispatch] = useReducer(rootReducer, initialState);
 
@@ -42,7 +44,9 @@ function App() {
         <main id="main" role="main" className="container" style={{ padding: '16px' }}>
           <ErrorBoundary>
             <LessonsProvider>
-              <AppRouter />
+              <GamesProvider>
+                <AppRouter />
+              </GamesProvider>
             </LessonsProvider>
           </ErrorBoundary>
         </main>

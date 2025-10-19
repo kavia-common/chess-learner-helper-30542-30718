@@ -12,6 +12,9 @@ import { LinkAccounts } from '../pages/auth/LinkAccounts';
 import { LessonsList } from '../pages/lessons/LessonsList';
 import { LessonDetail } from '../pages/lessons/LessonDetail';
 import { Quiz } from '../pages/lessons/Quiz';
+import { AIPlay } from '../pages/games/AIPlay';
+import { Matchmaking } from '../pages/games/Matchmaking';
+import { RealtimeGame } from '../pages/games/RealtimeGame';
 
 /**
  * PUBLIC_INTERFACE
@@ -19,6 +22,7 @@ import { Quiz } from '../pages/lessons/Quiz';
  * Routes:
  * - "/" -> Home
  * - Lessons: /lessons, /lessons/:id, /lessons/:id/quiz
+ * - Games: /games/ai, /games/match, /games/realtime/:gameId
  * - Auth routes: /login, /register, /verify-email, /forgot-password, /reset-password, /link-accounts
  * - "/dashboard" -> Example protected route (redirects to /login if unauthenticated)
  * - "*" -> NotFound
@@ -30,6 +34,9 @@ export function AppRouter() {
       <Route path="/lessons" element={<LessonsList />} />
       <Route path="/lessons/:id" element={<LessonDetail />} />
       <Route path="/lessons/:id/quiz" element={<Quiz />} />
+      <Route path="/games/ai" element={<AIPlay />} />
+      <Route path="/games/match" element={<Matchmaking />} />
+      <Route path="/games/realtime/:gameId" element={<RealtimeGame />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/verify-email" element={<VerifyEmail />} />

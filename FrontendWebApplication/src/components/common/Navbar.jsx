@@ -22,6 +22,8 @@ export function Navbar() {
     }}>
       <NavLink to="/" style={linkStyle} end>Home</NavLink>
       <NavLink to="/lessons" style={linkStyle}>Lessons</NavLink>
+      <NavLink to="/games/ai" style={linkStyle}>Play vs AI</NavLink>
+      <NavLink to="/games/match" style={linkStyle}>Matchmaking</NavLink>
       <div style={{flex: 1}} />
       <NavLink to="/login" style={linkStyle}>Login</NavLink>
       <NavLink to="/register" style={linkStyle}>Register</NavLink>
