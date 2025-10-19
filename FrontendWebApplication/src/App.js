@@ -8,6 +8,12 @@ import NotFound from './routes/NotFound';
 import { ROUTES } from './config/routes';
 import ProtectedRoute from './components/common/ProtectedRoute';
 
+import Login from './routes/Auth/Login';
+import Register from './routes/Auth/Register';
+import VerifyEmail from './routes/Auth/VerifyEmail';
+import ResetPassword from './routes/Auth/ResetPassword';
+import Onboarding from './routes/Onboarding';
+
 // Simple placeholder pages for now
 function Home() {
   return (
@@ -58,12 +64,19 @@ export default function App() {
           <Route path={ROUTES.HISTORY} element={<Placeholder title="Game History" />} />
           <Route path={ROUTES.CHALLENGES} element={<Placeholder title="Challenges" />} />
           <Route path={ROUTES.PROFILE} element={<Placeholder title="Your Profile" />} />
+          <Route path={ROUTES.ONBOARDING} element={<Onboarding />} />
         </Route>
 
         {/* Admin protected route with role example */}
         <Route element={<ProtectedRoute roles={['admin']} />}>
           <Route path={ROUTES.ADMIN} element={<Placeholder title="Admin Tools" />} />
         </Route>
+
+        {/* Auth routes (public) */}
+        <Route path={ROUTES.LOGIN} element={<Login />} />
+        <Route path={ROUTES.REGISTER} element={<Register />} />
+        <Route path={ROUTES.VERIFY_EMAIL} element={<VerifyEmail />} />
+        <Route path={ROUTES.RESET_PASSWORD} element={<ResetPassword />} />
 
         <Route path="/home" element={<Navigate to={ROUTES.HOME} replace />} />
         <Route path={ROUTES.NOT_FOUND} element={<NotFound />} />
