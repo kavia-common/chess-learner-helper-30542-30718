@@ -16,6 +16,11 @@ import Onboarding from './routes/Onboarding';
 import Profile from './routes/Profile/Profile';
 import EditProfile from './routes/Profile/EditProfile';
 
+// Lessons and quizzes
+import LessonList from './routes/Lessons/LessonList';
+import LessonDetail from './routes/Lessons/LessonDetail';
+import Quiz from './routes/Lessons/Quiz';
+
 // Simple placeholder pages for now
 function Home() {
   return (
@@ -57,8 +62,10 @@ export default function App() {
     <Routes>
       <Route element={<AppLayout />}>
         <Route index element={<Home />} />
-        <Route path={ROUTES.LESSONS} element={<Placeholder title="Lessons" />} />
+        <Route path={ROUTES.LESSONS} element={<LessonList />} />
+        <Route path={`${ROUTES.LESSONS}/:lessonId`} element={<LessonDetail />} />
         <Route path={ROUTES.QUIZZES} element={<Placeholder title="Quizzes" />} />
+        <Route path={`${ROUTES.QUIZZES}/:lessonId`} element={<Quiz />} />
         <Route path={ROUTES.PRACTICE} element={<Placeholder title="Practice Games" />} />
 
         {/* Protected user areas */}
