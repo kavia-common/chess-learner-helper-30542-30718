@@ -3,6 +3,7 @@ import './App.css';
 import { AppRouter } from './router/AppRouter';
 import { Navbar } from './components/common/Navbar';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
+import { ToastProvider } from './components/common/Toast';
 import { StoreProvider, initialState, rootReducer, authActions } from './store';
 import { LessonsProvider } from './store/lessons';
 import { GamesProvider } from './store/games';
@@ -38,25 +39,27 @@ function App() {
 
   return (
     <StoreProvider value={{ state, dispatch }}>
-      <a href="#main" className="skip-link">Skip to content</a>
-      <div className="App">
-        <Navbar />
-        <main id="main" role="main" aria-live="polite" className="container" style={{ padding: '16px' }}>
-          <ErrorBoundary>
-            <LessonsProvider>
-              <GamesProvider>
-                <HistoryProvider>
-                  <GamificationProvider>
-                    <UserProvider>
-                      <AppRouter />
-                    </UserProvider>
-                  </GamificationProvider>
-                </HistoryProvider>
-              </GamesProvider>
-            </LessonsProvider>
-          </ErrorBoundary>
-        </main>
-      </div>
+      <ToastProvider>
+        <a href="#main" className="skip-link">Skip to content</a>
+        <div className="App">
+          <Navbar />
+          <main id="main" role="main" aria-live="polite" className="container" style={{ padding: '16px' }}>
+            <ErrorBoundary>
+              <LessonsProvider>
+                <GamesProvider>
+                  <HistoryProvider>
+                    <GamificationProvider>
+                      <UserProvider>
+                        <AppRouter />
+                      </UserProvider>
+                    </GamificationProvider>
+                  </HistoryProvider>
+                </GamesProvider>
+              </LessonsProvider>
+            </ErrorBoundary>
+          </main>
+        </div>
+      </ToastProvider>
     </StoreProvider>
   );
 }

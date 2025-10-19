@@ -2,7 +2,7 @@ import React from 'react';
 
 /**
  * PUBLIC_INTERFACE
- * ErrorBoundary is a class component to catch render-time errors and display a user-friendly message.
+ * ErrorBoundary wraps app trees and shows a fallback UI when an error is thrown during rendering.
  */
 export class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -15,7 +15,7 @@ export class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, info) {
-    // Log error to monitoring service here
+    // hook for logging service (Sentry, etc.)
     // console.error('ErrorBoundary caught:', error, info);
   }
 
@@ -23,12 +23,15 @@ export class ErrorBoundary extends React.Component {
     const { hasError } = this.state;
     if (hasError) {
       return (
-        <div role="alert" style={{ padding: 16 }}>
-          <h2>Something went wrong.</h2>
-          <p>Please try refreshing the page. If the problem persists, contact support.</p>
+        <div role="alert" style={{ padding: 16, background: '#fef3c7', border: '1px solid #fde68a', borderRadius: 8 }}>
+          <strong>Something went wrong.</strong>
+          <div style={{ marginTop: 8, color: '#92400e', fontSize: 14 }}>
+            Please refresh the page or try again later.
+          </div>
         </div>
       );
     }
+    // eslint-disable-next-line react/prop-types
     return this.props.children;
   }
 }
