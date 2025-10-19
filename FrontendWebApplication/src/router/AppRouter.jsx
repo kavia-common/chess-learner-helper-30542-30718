@@ -1,8 +1,9 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { Home } from '../pages/Home';
 import { NotFound } from '../pages/NotFound';
 import { ProtectedRoute } from '../components/common/ProtectedRoute';
+import RoleGuard from '../components/common/RoleGuard';
 import { Login } from '../pages/auth/Login';
 import { Register } from '../pages/auth/Register';
 import { VerifyEmail } from '../pages/auth/VerifyEmail';
@@ -24,16 +25,18 @@ import { Achievements } from '../pages/gamification/Achievements';
 import { Profile } from '../pages/Profile';
 import { Settings } from '../pages/Settings';
 
+// Admin pages (default exports)
+import AdminDashboard from '../pages/admin/AdminDashboard';
+import ContentManager from '../pages/admin/ContentManager';
+import UsersManager from '../pages/admin/UsersManager';
+import Moderation from '../pages/admin/Moderation';
+import Analytics from '../pages/admin/Analytics';
+import AuditLog from '../pages/admin/AuditLog';
+
 /**
  * PUBLIC_INTERFACE
  * AppRouter defines the route map for the SPA with React Router v6.
- * Routes:
- * - "/" -> Home
- * - Lessons: /lessons, /lessons/:id, /lessons/:id/quiz
- * - Games: /games/ai, /games/match, /games/realtime/:gameId
- * - Auth routes: /login, /register, /verify-email, /forgot-password, /reset-password, /link-accounts
- * - "/dashboard" -> Example protected route (redirects to /login if unauthenticated)
- * - "*" -> NotFound
+ * Now includes /admin routes protected by auth (ProtectedRoute) and role-based access (RoleGuard).
  */
 export function AppRouter() {
   return (
@@ -80,6 +83,26 @@ export function AppRouter() {
           </ProtectedRoute>
         }
       />
+
+      {/* Admin - Protected by auth and role guard */}
+      <Route
+        path="/admin"
+        element={
+          <ProtectedRoute>
+            <RoleGuard allowedRoles={['admin']}>
+              <AdminDashboard />
+            </RoleGuard>
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<Navigate to="/admin/content" replace />} />
+        <Route path="content" element={<ContentManager />} />
+        <Route path="users" element={<UsersManager />} />
+        <Route path="moderation" element={<Moderation />} />
+        <Route path="analytics" element={<Analytics />} />
+        <Route path="audit-log" element={<AuditLog />} />
+      </Route>
+
       <Route
         path="/dashboard"
         element={

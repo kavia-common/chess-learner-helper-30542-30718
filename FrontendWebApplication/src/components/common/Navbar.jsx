@@ -5,7 +5,7 @@ import { useStore, authActions } from '../../store';
 /**
  * PUBLIC_INTERFACE
  * Navbar renders the top navigation with links to key routes.
- * Includes simple focus-visible styles for accessibility.
+ * Shows Admin link only for users with role 'admin'.
  */
 export function Navbar() {
   const { state, dispatch } = useStore();
@@ -20,6 +20,7 @@ export function Navbar() {
   });
 
   const authed = Boolean(state?.auth?.isAuthenticated);
+  const role = state?.auth?.user?.role || 'learner';
 
   return (
     <nav className="navbar" role="navigation" aria-label="Main Navigation" style={{
@@ -35,6 +36,11 @@ export function Navbar() {
       <NavLink to="/puzzles" style={linkStyle}>Puzzles</NavLink>
       <NavLink to="/leaderboards" style={linkStyle}>Leaderboards</NavLink>
       <NavLink to="/achievements" style={linkStyle}>Achievements</NavLink>
+
+      {role === 'admin' && (
+        <NavLink to="/admin" style={linkStyle}>Admin</NavLink>
+      )}
+
       <div style={{flex: 1}} />
       {authed ? (
         <>
