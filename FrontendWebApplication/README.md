@@ -1,82 +1,266 @@
-# Lightweight React Template for KAVIA
+# Chess Learner Helper — Frontend Web Application
 
-This project provides a minimal React template with a clean, modern UI and minimal dependencies.
+This repository contains the React single-page application (SPA) for the Chess Learner Helper platform. It provides interactive lessons, quizzes, practice games against AI or real-time opponents, gamification features, user profile/settings, and admin tools. The app communicates with a backend via REST APIs and is built with performance, accessibility, security, and testability in mind.
 
-## Features
+## Project Overview and Goals
 
-- **Lightweight**: No heavy UI frameworks - uses only vanilla CSS and React
-- **Modern UI**: Clean, responsive design with KAVIA brand styling
-- **Fast**: Minimal dependencies for quick loading times
-- **Simple**: Easy to understand and modify
+The goal of the Chess Learner Helper frontend is to deliver an engaging and accessible learning experience for chess learners of all ages. Core features include:
+- Registration, authentication (email/password and OAuth), and secure session management
+- Lesson delivery, quizzes, progress tracking, and personalized recommendations
+- Practice games (AI and real-time), history and post-game analysis, hints with fair restrictions
+- Gamification (daily challenges, puzzles, leaderboards, achievements)
+- User profile, settings, and privacy controls
+- Admin tools for content and users with role-based access
+- Accessibility, responsiveness, strong security practices, and automated testing
 
 ## Getting Started
 
-In the project directory, you can run:
+### Prerequisites
+- Node.js 18+ and npm
+- Backend API available and reachable at the configured base URL (see Environment Variables)
 
-### `npm start`
+### Install dependencies
+- npm install
 
-Runs the app in development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### Start development server
+- npm start
+- App runs at http://localhost:3000
 
-### `npm test`
+### Run tests (CI mode)
+- npm test
+This uses CI=true (non-interactive) to ensure compatibility with CI environments.
 
-Launches the test runner in interactive watch mode.
+### Build for production
+- npm run build
+Outputs optimized static assets to build/.
 
-### `npm run build`
+## Environment Variables and Configuration
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+All environment variables are read via src/utils/env.js and must be prefixed with REACT_APP_.
 
-## Customization
+Required (for backend connectivity):
+- REACT_APP_API_BASE_URL: Base URL for the REST API (e.g., https://api.example.com). Calls are made via src/api/httpClient.js and src/api/endpoints.js.
 
-### Colors
+Optional:
+- REACT_APP_WS_BASE_URL: Base URL for WebSocket connections if used for real-time features (e.g., wss://ws.example.com).
+- REACT_APP_OAUTH_GOOGLE_CLIENT_ID: OAuth client ID for Google sign-in flows used by SocialLoginButtons.
+- REACT_APP_SENTRY_DSN: Sentry DSN for frontend error tracking.
+- REACT_APP_FEATURE_FLAGS: Feature flags as JSON or comma-separated key:value (e.g., {"mockMode":false} or mockMode:true,lessonsV2:on).
+- REACT_APP_BUILD_VERSION: Build/version string injected into the app (defaults to 0.0.0).
 
-The main brand colors are defined as CSS variables in `src/App.css`:
+Validation and parsing:
+- env.js performs minimal validation, trims and sanitizes URLs, and parses REACT_APP_FEATURE_FLAGS from JSON or key:value CSV.
 
-```css
-:root {
-  --kavia-orange: #E87A41;
-  --kavia-dark: #1A1A1A;
-  --text-color: #ffffff;
-  --text-secondary: rgba(255, 255, 255, 0.7);
-  --border-color: rgba(255, 255, 255, 0.1);
-}
-```
+## Architecture Overview
 
-### Components
+### Routing Map
 
-This template uses pure HTML/CSS components instead of a UI framework. You can find component styles in `src/App.css`. 
+The SPA uses React Router v6 with route-level code splitting via React.lazy and Suspense. See src/router/AppRouter.jsx.
 
-Common components include:
-- Buttons (`.btn`, `.btn-large`)
-- Container (`.container`)
-- Navigation (`.navbar`)
-- Typography (`.title`, `.subtitle`, `.description`)
+Public routes:
+- /: Home
+- /lessons: Lessons list
+- /lessons/:id: Lesson detail
+- /lessons/:id/quiz: Lesson quiz
+- /games/ai: AI play
+- /games/match: Matchmaking
+- /games/realtime/:gameId: Real-time game
+- /history: Game history
+- /history/:gameId: Game replay
+- /challenges: Daily challenge
+- /puzzles: Puzzles
+- /leaderboards: Leaderboards
+- /achievements: Achievements
+- /login: Login
+- /register: Register
+- /verify-email: Verify email
+- /forgot-password: Forgot password
+- /reset-password: Reset password
+- 404 fallback: *
 
-## Learn More
+Protected routes:
+- /profile: Requires auth (ProtectedRoute)
+- /settings: Requires auth (ProtectedRoute)
+- /link-accounts: Requires auth (ProtectedRoute)
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Admin (nested, requires auth + role=admin via RoleGuard):
+- /admin (redirects to /admin/content)
+- /admin/content
+- /admin/users
+- /admin/moderation
+- /admin/analytics
+- /admin/audit-log
 
-### Code Splitting
+Performance:
+- All major page-level components are lazy-loaded. Suspense fallback uses an accessible Spinner component.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+### State Strategy and Providers
 
-### Analyzing the Bundle Size
+Global store:
+- src/store/index.js defines a context-based store with initialState, rootReducer, and action creators for auth and UI notifications. Store is consumed via useStore() and StoreProvider.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+Domain-specific stores and hooks:
+- src/store/lessons.js, src/store/games.js, src/store/history.js, src/store/gamification.js, src/store/user.js define domain reducers, contexts, and provider patterns for lessons, games, history, gamification, and user management.
+- src/store/hooks/* exposes hooks such as useAuth, useLessons, useGames, useHistory, useGamification, and useUser, encapsulating state access and side effects to keep pages/components lean.
 
-### Making a Progressive Web App
+Guards:
+- src/components/common/ProtectedRoute.jsx checks authentication from the global store and redirects unauthenticated users to /login.
+- src/components/common/RoleGuard.jsx restricts access to children based on user roles, redirecting unauthorized users to /.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+Error isolation:
+- src/components/common/ErrorBoundary.jsx provides a global error boundary for resilient rendering.
 
-### Advanced Configuration
+### HTTP Client and API Layer
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+HTTP client:
+- src/api/httpClient.js wraps axios with:
+  - Base URL from env (getEnv().apiBaseUrl)
+  - withCredentials enabled for secure session cookies
+  - Request interceptor attaches Authorization bearer token if set in-memory and CSRF header if available
+  - Response interceptor handles a single 401 retry flow via /auth/refresh endpoint
+  - Standardized error normalization via src/utils/errorHandler.js
 
-### Deployment
+Endpoints:
+- src/api/endpoints.js constructs full URLs for all domains (auth, users, lessons, games, history/analysis, gamification, admin) using the configured base URL.
+- Each domain API module (authApi.js, lessonsApi.js, gamesApi.js, historyApi.js, gamificationApi.js, adminApi.js, userApi.js) consumes httpClient and endpoints and returns normalized results.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+Security posture:
+- Access tokens are kept in-memory (not persisted) by default to reduce XSS risk.
+- Prefer server-managed httpOnly session cookies for primary authentication.
+- If persisting tokens is necessary, do so explicitly in auth flows and document the risks.
 
-### `npm run build` fails to minify
+### Security and Privacy Practices
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- Session Auth: Prefer httpOnly, secure cookies. httpClient enables withCredentials. Do not store tokens in localStorage unless absolutely necessary.
+- CSRF: Hook points in httpClient to attach a CSRF header if the backend provides a token (e.g., XSRF-TOKEN cookie). Update getCsrfToken() to integrate with your backend strategy.
+- Input Sanitization: Use src/utils/sanitize.js where user-generated content is rendered. Keep dangerouslySetInnerHTML out of the codebase unless sanitized and justified.
+- Error Messages: errorHandler.js normalizes errors while avoiding leakage of sensitive backend details.
+- Access Control: ProtectedRoute and RoleGuard enforce auth and role checks in the UI. Backend must always enforce authorization independently.
+- Privacy: Settings page includes privacy, notification preferences, consent toggles, and account deletion workflow (via user store and APIs).
+
+### Accessibility Features and Checklist
+
+Implemented:
+- Keyboard navigation in interactive components (e.g., Chessboard supports arrow key navigation and focus management).
+- ARIA attributes and labels on controls (e.g., ProgressBar aria-* attributes, Spinner’s aria-live).
+- High contrast and focus-visible styles via styles/accessibility.css.
+- Semantic structure and headings on pages.
+- Toast notifications announced via ARIA where applicable.
+
+Checklist for contributions:
+- Provide accessible names for interactive elements (aria-label, aria-labelledby).
+- Ensure focus order is logical. Manage focus on route changes when needed.
+- Use role attributes only when semantic elements are insufficient.
+- Maintain sufficient color contrast. Check against WCAG AA.
+- Support keyboard operation for all functionality.
+- Provide alt text for images and labels for form fields.
+
+## API Contracts (Frontend Expectations)
+
+The frontend expects the following REST endpoints. The base URL is REACT_APP_API_BASE_URL. Exact shapes may vary by backend; ensure backend aligns with these contracts or adjust API layer accordingly.
+
+Auth
+- POST /auth/login: { email, password } -> { user, token? } or sets session cookie
+- POST /auth/logout: clears session
+- POST /auth/register: { email, password } -> { user } or confirmation flow
+- GET /auth/me: returns current session user
+- POST /auth/refresh: refreshes session cookie or access token
+- POST /auth/forgot-password: { email }
+- POST /auth/reset-password: { token, newPassword }
+- POST /auth/verify-email: { token }
+- GET /auth/oauth/google: OAuth initiation (redirect)
+- POST /auth/link-accounts: link social providers
+
+Users
+- GET /users/:id: user profile
+- PATCH /users/:id: update profile
+- POST /users/:id/avatar: multipart avatar upload
+
+Lessons and Progress
+- GET /lessons: list lessons with progress summary
+- GET /lessons/:id: lesson detail content
+- GET /lessons/:id/quiz: quiz items
+- POST /lessons/:id/quiz: submit answers -> results and feedback
+- GET /progress: aggregated progress and recommendations
+
+Games and History
+- GET /games: list/open games
+- POST /games/ai: start new AI game
+- POST /games/matchmaking: enqueue for matchmaking
+- GET /games/:id: get current game state
+- GET /history: list past games with filters/pagination
+- GET /history/:gameId: retrieve historical game with moves
+- GET /history/:gameId/analysis: post-game analysis metrics
+- Optional WebSocket endpoints if REACT_APP_WS_BASE_URL is used for real-time updates
+
+Gamification
+- GET /gamification/achievements
+- GET /gamification/leaderboards?period=weekly|monthly|all
+- GET /gamification/daily-challenge
+- GET /gamification/puzzles?difficulty=...
+- POST /gamification/puzzles/:id/submit: submit puzzle solution
+
+Admin
+- GET /admin/dashboard: summary metrics
+- GET /admin/analytics
+- GET /admin/audit-log
+- GET/POST /admin/content
+- GET/POST/PATCH /admin/users
+- GET/POST /admin/moderation
+
+See docs/api-contracts.md for detailed request/response structures.
+
+## Testing Strategy
+
+- Unit and integration tests using react-scripts (Jest) and @testing-library utilities.
+- Tests live near features under src/pages/**/__tests__ and src/components/**/__tests__.
+- Run tests in CI mode with npm test (uses CI=true and --watchAll=false).
+- Example tests include routing guards, lessons list rendering, protected routes, and chessboard interactions.
+
+How to run:
+- npm test
+
+## Continuous Integration
+
+- Tests are configured to run in non-interactive mode by default in package.json.
+- Recommend integrating with your CI system to run npm ci && npm test on pull requests and main branch merges.
+- For production builds, run npm run build and publish build/ artifacts.
+
+## Mock Mode and Feature Flags
+
+Planned (Step 17):
+- Introduce a mock mode using REACT_APP_FEATURE_FLAGS mockMode:true to serve data from local fixtures for demos and offline development.
+- The API layer will branch to return mocked data when mockMode is enabled.
+- Additional flags can gate experimental features (e.g., lessonsV2, newOnboarding).
+
+Current:
+- Feature flags are parsed in env.js and exposed via getEnv().featureFlags for conditional logic.
+
+## Performance Measures
+
+Implemented:
+- Route-level code splitting with React.lazy and Suspense in AppRouter.
+- Accessible Suspense fallback Spinner to keep users informed during loading.
+- Prefetch hints component (components/common/PrefetchHints.jsx) is available to declaratively add link rel=prefetch/prerender when needed.
+
+Recommendations:
+- Use memoization and selective re-renders in heavy components like Chessboard.
+- Prefetch lesson detail or next quiz when a user is likely to navigate there.
+- Minimize bundle size by keeping large dependencies out of initial render and leveraging lazy imports.
+
+## Repository Structure
+
+- src/router/AppRouter.jsx: Routing map with guards and lazy loading
+- src/api/httpClient.js, src/api/endpoints.js, src/api/*.js: API layer
+- src/store/index.js and src/store/*: Global and domain stores with hooks
+- src/components/common/*: Shared UI components (Spinner, Skeleton, Toast, ProtectedRoute, RoleGuard, ErrorBoundary)
+- src/components/games, src/components/history: Feature components
+- src/pages/*: Route pages organized by domain (auth, lessons, games, history, gamification, admin)
+- src/utils/*: env parsing, constants, sanitization, validators, error handling
+- src/styles/accessibility.css: Accessibility and contrast helpers
+
+## Support and Contributions
+
+- Follow the accessibility checklist and security practices outlined above.
+- Align backend responses with API contracts or update API modules and docs accordingly.
+- Add tests for new features and ensure CI remains green.
