@@ -5,12 +5,15 @@ import { AppRouter } from './router/AppRouter';
 import { Navbar } from './components/common/Navbar';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
 import { ToastProvider } from './components/common/Toast';
+import Spinner from './components/common/Spinner';
+import { Suspense } from 'react';
 import { StoreProvider, initialState, rootReducer, authActions } from './store';
 import { LessonsProvider } from './store/lessons';
 import { GamesProvider } from './store/games';
 import { HistoryProvider } from './store/history';
 import { GamificationProvider } from './store/gamification';
 import { UserProvider } from './store/user';
+import PrefetchHints from './components/common/PrefetchHints';
 
 // PUBLIC_INTERFACE
 function App() {
@@ -44,6 +47,7 @@ function App() {
         <a href="#main" className="skip-link">Skip to content</a>
         <div className="App">
           <Navbar />
+          <PrefetchHints />
           <main id="main" role="main" aria-live="polite" className="container" style={{ padding: '16px' }}>
             <ErrorBoundary>
               <LessonsProvider>
@@ -51,7 +55,9 @@ function App() {
                   <HistoryProvider>
                     <GamificationProvider>
                       <UserProvider>
-                        <AppRouter />
+                        <Suspense fallback={<Spinner label="Loading..." />}>
+                          <AppRouter />
+                        </Suspense>
                       </UserProvider>
                     </GamificationProvider>
                   </HistoryProvider>

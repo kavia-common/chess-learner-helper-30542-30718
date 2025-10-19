@@ -7,7 +7,7 @@ import { useAuth } from '../../store/hooks';
  * Navbar
  * Main navigation component showing links and auth-aware actions.
  */
-export const Navbar = () => {
+export const Navbar = React.memo(() => {
   const navigate = useNavigate();
   const { isAuthenticated, user, logout, loading } = useAuth();
 
@@ -43,6 +43,6 @@ export const Navbar = () => {
       )}
     </nav>
   );
-};
+});
 
 export default Navbar;

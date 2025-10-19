@@ -8,10 +8,15 @@ import { normalizeError } from "../utils/errorHandler";
 /**
  * Axios HTTP client with:
  * - Base URL from env
- * - withCredentials for cookie-based auth
+ * - withCredentials for cookie-based auth (httpOnly cookies preferred)
  * - Request interceptor adds CSRF header if present
  * - Response interceptor handles 401 by attempting refresh once
  * - Normalized error handling across the app
+ *
+ * Security and privacy:
+ * - Access tokens are kept in-memory by default (setAccessToken) to avoid persistence in localStorage.
+ * - Prefer server-managed httpOnly cookies for session auth.
+ * - If you must persist tokens, do so explicitly in the auth flow and document the risks.
  */
 
 // Simple in-memory token placeholders if using bearer tokens in the future
@@ -28,6 +33,12 @@ function subscribeTokenRefresh(cb) {
   refreshSubscribers.push(cb);
 }
 
+/**
+ * PUBLIC_INTERFACE
+ * setAccessToken
+ * Sets the in-memory access token for bearer auth when used. This library intentionally
+ * avoids persisting tokens to localStorage/sessionStorage to reduce XSS risk.
+ */
 export function setAccessToken(token) {
   accessToken = token || null;
 }
