@@ -228,13 +228,23 @@ How to run:
 
 ## Mock Mode and Feature Flags
 
-Planned (Step 17):
-- Introduce a mock mode using REACT_APP_FEATURE_FLAGS mockMode:true to serve data from local fixtures for demos and offline development.
-- The API layer will branch to return mocked data when mockMode is enabled.
-- Additional flags can gate experimental features (e.g., lessonsV2, newOnboarding).
+Mock backend mode:
+- Toggle: REACT_APP_USE_MOCKS=true (preferred) or set REACT_APP_FEATURE_FLAGS to include mockMode:true
+- When enabled in development, the app starts MSW (Mock Service Worker) and intercepts API requests to return realistic mock data.
+- Supported domains in mocks: auth, users, lessons, quizzes, progress, games, history/analysis, gamification (achievements, leaderboards, daily challenge, puzzles), and admin (dashboard, analytics, audit-log, content, moderation, users).
+- On unhandled requests, MSW bypasses to network so production APIs can still be hit when available.
 
-Current:
-- Feature flags are parsed in env.js and exposed via getEnv().featureFlags for conditional logic.
+How to use:
+1) Create .env (or use .env.example) with:
+   REACT_APP_USE_MOCKS=true
+   REACT_APP_API_BASE_URL=
+2) npm start
+   The app will boot without a backend and render major routes with mocked data.
+
+Notes:
+- MSW is only started in development builds when REACT_APP_USE_MOCKS is true.
+- In production builds, MSW is not started even if the flag is set.
+- You can still set REACT_APP_FEATURE_FLAGS='mockMode:true' as an alternative; env.js maps it to useMocks.
 
 ## Performance Measures
 

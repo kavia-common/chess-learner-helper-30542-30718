@@ -16,6 +16,7 @@ export function getEnv() {
     REACT_APP_SENTRY_DSN,
     REACT_APP_FEATURE_FLAGS,
     REACT_APP_BUILD_VERSION,
+    REACT_APP_USE_MOCKS,
     NODE_ENV,
   } = process.env;
 
@@ -30,6 +31,7 @@ export function getEnv() {
     buildVersion: (REACT_APP_BUILD_VERSION || "0.0.0").trim(),
     isProd: NODE_ENV === "production",
     isDev: NODE_ENV !== "production",
+    useMocks: parseTruthy(REACT_APP_USE_MOCKS || featureFlags.mockMode),
   };
 
   // Minimal validation

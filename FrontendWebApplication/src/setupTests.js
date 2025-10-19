@@ -5,5 +5,8 @@
 */
 import '@testing-library/jest-dom';
 
+// Tests run in Node (jsdom). The browser MSW worker initializes only in src/index.js
+// when REACT_APP_USE_MOCKS=true and in development mode. No action required here.
+
 // Avoid noisy React act warnings in strict mode during tests for async timers if needed
 // jest.useFakeTimers(); // enable per-test when needed
