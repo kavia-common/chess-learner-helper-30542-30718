@@ -21,6 +21,9 @@ import LessonList from './routes/Lessons/LessonList';
 import LessonDetail from './routes/Lessons/LessonDetail';
 import Quiz from './routes/Lessons/Quiz';
 import { PlayAI, PlayRealtime } from './routes/Practice';
+import HistoryList from './routes/History/HistoryList';
+import GameReplay from './routes/History/GameReplay';
+import Analysis from './routes/History/Analysis';
 
 // Simple placeholder pages for now
 function Home() {
@@ -83,7 +86,9 @@ export default function App() {
 
         {/* Protected user areas */}
         <Route element={<ProtectedRoute />}>
-          <Route path={ROUTES.HISTORY} element={<Placeholder title="Game History" />} />
+          <Route path={ROUTES.HISTORY} element={<HistoryList />} />
+          <Route path={`${ROUTES.HISTORY}/replay/:gameId`} element={<GameReplay />} />
+          <Route path={`${ROUTES.HISTORY}/analysis/:gameId`} element={<Analysis />} />
           <Route path={ROUTES.CHALLENGES} element={<Placeholder title="Challenges" />} />
           <Route path={ROUTES.PROFILE} element={<Profile />} />
           <Route path={`${ROUTES.PROFILE}/edit`} element={<EditProfile />} />
