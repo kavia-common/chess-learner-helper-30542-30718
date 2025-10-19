@@ -3,7 +3,7 @@ import './App.css';
 import { AppRouter } from './router/AppRouter';
 import { Navbar } from './components/common/Navbar';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
-import { StoreProvider, initialState, rootReducer } from './store';
+import { StoreProvider, initialState, rootReducer, authActions } from './store';
 
 // PUBLIC_INTERFACE
 function App() {
@@ -21,6 +21,13 @@ function App() {
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
+
+  // Attempt to refresh session on mount
+  useEffect(() => {
+    const refresh = authActions.refresh(dispatch);
+    refresh();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <StoreProvider value={{ state, dispatch }}>

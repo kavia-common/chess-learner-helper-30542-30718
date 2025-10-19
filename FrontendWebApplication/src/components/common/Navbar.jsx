@@ -23,7 +23,7 @@ export function Navbar() {
       <NavLink to="/" style={linkStyle} end>Home</NavLink>
       <div style={{flex: 1}} />
       <NavLink to="/login" style={linkStyle}>Login</NavLink>
-      <NavLink to="/register" style={linkStyle} onClick={(e)=>{e.preventDefault(); window.location.href='/login';}} aria-label="Register (redirects to Login placeholder)">Register</NavLink>
+      <NavLink to="/register" style={linkStyle}>Register</NavLink>
     </nav>
   );
 }

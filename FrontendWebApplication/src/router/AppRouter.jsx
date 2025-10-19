@@ -1,15 +1,21 @@
 import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import { Home } from '../pages/Home';
 import { NotFound } from '../pages/NotFound';
 import { ProtectedRoute } from '../components/common/ProtectedRoute';
+import { Login } from '../pages/auth/Login';
+import { Register } from '../pages/auth/Register';
+import { VerifyEmail } from '../pages/auth/VerifyEmail';
+import { ForgotPassword } from '../pages/auth/ForgotPassword';
+import { ResetPassword } from '../pages/auth/ResetPassword';
+import { LinkAccounts } from '../pages/auth/LinkAccounts';
 
 /**
  * PUBLIC_INTERFACE
  * AppRouter defines the route map for the SPA with React Router v6.
  * Routes:
  * - "/" -> Home
- * - "/login" -> Placeholder login page
+ * - Auth routes: /login, /register, /verify-email, /forgot-password, /reset-password, /link-accounts
  * - "/dashboard" -> Example protected route (redirects to /login if unauthenticated)
  * - "*" -> NotFound
  */
@@ -17,7 +23,19 @@ export function AppRouter() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
-      <Route path="/login" element={<LoginPlaceholder />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/verify-email" element={<VerifyEmail />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
+      <Route
+        path="/link-accounts"
+        element={
+          <ProtectedRoute>
+            <LinkAccounts />
+          </ProtectedRoute>
+        }
+      />
       <Route
         path="/dashboard"
         element={
@@ -28,15 +46,6 @@ export function AppRouter() {
       />
       <Route path="*" element={<NotFound />} />
     </Routes>
-  );
-}
-
-function LoginPlaceholder() {
-  return (
-    <section aria-labelledby="login-title">
-      <h1 id="login-title">Login</h1>
-      <p>This is a placeholder login page. Implement auth later.</p>
-    </section>
   );
 }
 
