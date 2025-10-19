@@ -1,52 +1,52 @@
-//
+"use strict";
+
+/**
+ * Centralized error handling utilities
+ * Ensures a consistent normalized error shape across the app.
+ */
+
 // PUBLIC_INTERFACE
-export function normalizeError(err) {
-  /**
-   * Normalize arbitrary error objects (HTTP errors, fetch errors, app errors) into a consistent shape.
-   * Returns: { message: string, status?: number, code?: string, details?: any }
-   */
-  if (!err) return { message: 'Unknown error occurred' };
-
-  // If string
-  if (typeof err === 'string') {
-    return { message: err };
+export function extractErrorMessage(error) {
+  /** Extracts a human-readable message from any error-like object. */
+  if (!error) return "An unknown error occurred";
+  if (typeof error === "string") return error;
+  if (error.message) return error.message;
+  if (error.response && error.response.data && error.response.data.message) {
+    return error.response.data.message;
   }
-
-  // If already normalized
-  if (err.message && (err.status || err.code || err.details)) {
-    return { message: err.message, status: err.status, code: err.code, details: err.details };
-  }
-
-  // Axios-like error
-  if (err.response && err.response.data) {
-    const data = err.response.data;
-    const message =
-      data?.message ||
-      data?.error ||
-      data?.detail ||
-      (typeof data === 'string' ? data : '') ||
-      err.message ||
-      'Request failed';
-    return { message, status: err.response.status, code: data?.code, details: data };
-  }
-
-  // Fetch Response-like error
-  if (err.status && err.text) {
-    return { message: err.statusText || 'Request failed', status: err.status };
-  }
-
-  // Error with cause or nested
-  const message =
-    err?.message ||
-    err?.error ||
-    err?.toString?.() ||
-    'An unexpected error happened. Please try again.';
-
-  return { message, status: err?.status, code: err?.code, details: err };
+  if (error.data && error.data.message) return error.data.message;
+  return "An unexpected error occurred";
 }
 
 // PUBLIC_INTERFACE
-export function handleApiError(err, { toastBus = (typeof window !== 'undefined' && window.__toastBus) || null, defaultMessage = 'Something went wrong' } = {}) {
+export function normalizeError(err) {
+  /** Normalizes any error into a consistent object. */
+  const status = err?.response?.status ?? err?.status ?? null;
+  const data = err?.response?.data ?? err?.data ?? null;
+  const message =
+    (data && (data.error || data.message || data.detail)) ||
+    err?.message ||
+    "An unexpected error occurred";
+  const code = data?.code || err?.code || null;
+
+  return {
+    message,
+    status,
+    code,
+    data,
+    original: err,
+    isNetworkError: !!(err?.message && /network error/i.test(err.message)),
+  };
+}
+
+// PUBLIC_INTERFACE
+export function handleApiError(
+  err,
+  {
+    toastBus = (typeof window !== "undefined" && window.__toastBus) || null,
+    defaultMessage = "Something went wrong",
+  } = {}
+) {
   /**
    * Normalize and optionally show a toast notification for the error.
    * Returns normalized error object.
@@ -54,14 +54,12 @@ export function handleApiError(err, { toastBus = (typeof window !== 'undefined' 
   const n = normalizeError(err);
   const msg = n.message || defaultMessage;
 
-  // Optionally notify user
-  if (toastBus && typeof toastBus.publish === 'function') {
-    toastBus.publish({ message: msg, type: 'error' });
+  if (toastBus && typeof toastBus.publish === "function") {
+    toastBus.publish({ message: msg, type: "error" });
   }
 
-  // Log for diagnostics (can be routed to Sentry, etc.)
   // eslint-disable-next-line no-console
-  console.error('[API ERROR]', n);
+  console.error("[API ERROR]", n);
 
   return n;
 }

@@ -1,85 +1,87 @@
-const delay = (ms) => new Promise((res) => setTimeout(res, ms));
+"use strict";
 
-/**
- * adminApi
- * Stubbed client providing graceful behavior without a backend.
- * Methods resolve with example data after a small delay and never throw.
- */
+import { httpClient } from "./httpClient";
+import { Endpoints } from "./endpoints";
+import { normalizeError } from "../utils/errorHandler";
+
+// PUBLIC_INTERFACE
+export async function fetchAdminDashboard() {
+  /** Fetch admin dashboard summary. */
+  try {
+    const { data } = await httpClient.get(Endpoints.adminDashboard());
+    return data;
+  } catch (e) {
+    throw normalizeError(e);
+  }
+}
+
+// PUBLIC_INTERFACE
+export async function fetchAnalytics() {
+  /** Fetch analytics metrics. */
+  try {
+    const { data } = await httpClient.get(Endpoints.adminAnalytics());
+    return data;
+  } catch (e) {
+    throw normalizeError(e);
+  }
+}
+
+// PUBLIC_INTERFACE
+export async function fetchAuditLog(params = {}) {
+  /** Fetch audit logs with optional filters. */
+  try {
+    const { data } = await httpClient.get(Endpoints.adminAuditLog(), { params });
+    return data;
+  } catch (e) {
+    throw normalizeError(e);
+  }
+}
+
+// PUBLIC_INTERFACE
+export async function fetchContent() {
+  /** Fetch content items managed by admin. */
+  try {
+    const { data } = await httpClient.get(Endpoints.adminContent());
+    return data;
+  } catch (e) {
+    throw normalizeError(e);
+  }
+}
+
+// PUBLIC_INTERFACE
+export async function fetchModeration() {
+  /** Fetch moderation queue. */
+  try {
+    const { data } = await httpClient.get(Endpoints.adminModeration());
+    return data;
+  } catch (e) {
+    throw normalizeError(e);
+  }
+}
+
+// PUBLIC_INTERFACE
+export async function fetchUsers() {
+  /** Fetch users list for admin. */
+  try {
+    const { data } = await httpClient.get(Endpoints.adminUsers());
+    return data;
+  } catch (e) {
+    throw normalizeError(e);
+  }
+}
+
+// Backward-compatible default export shim expected by admin pages
 const adminApi = {
-  // PUBLIC_INTERFACE
-  async listContent() {
-    /** Returns a list of sample content items. */
-    await delay(200);
-    return [
-      { id: 'c1', title: 'Introduction to Chess', status: 'published' },
-      { id: 'c2', title: 'Tactics: Forks and Pins', status: 'draft' },
-      { id: 'c3', title: 'Endgames Basics', status: 'published' },
-    ];
+  listContent: fetchContent,
+  listUsers: fetchUsers,
+  getModerationQueue: fetchModeration,
+  moderateItem: async (itemId, action) => {
+    // Placeholder: implement when backend supports moderation actions
+    // For now, return success to avoid breaking UI flows
+    return { ok: true, itemId, action };
   },
-
-  // PUBLIC_INTERFACE
-  async listUsers() {
-    /** Returns a list of sample users with roles. */
-    await delay(200);
-    return [
-      { id: 'u1', email: 'admin@example.com', role: 'admin' },
-      { id: 'u2', email: 'mod@example.com', role: 'moderator' },
-      { id: 'u3', email: 'user@example.com', role: 'learner' },
-    ];
-  },
-
-  // PUBLIC_INTERFACE
-  async setUserRole(userId, role) {
-    /** Stub to set a user's role; resolves after delay. */
-    console.log('setUserRole (stub):', userId, role);
-    await delay(150);
-    return { ok: true };
-  },
-
-  // PUBLIC_INTERFACE
-  async getModerationQueue() {
-    /** Returns sample moderation items. */
-    await delay(180);
-    return [
-      { id: 'm1', type: 'comment', summary: 'Flagged comment about lesson 1' },
-      { id: 'm2', type: 'post', summary: 'User submission requires review' },
-    ];
-  },
-
-  // PUBLIC_INTERFACE
-  async moderateItem(itemId, action) {
-    /** Approve or reject an item; resolves after delay. */
-    console.log('moderateItem (stub):', itemId, action);
-    await delay(120);
-    return { ok: true };
-  },
-
-  // PUBLIC_INTERFACE
-  async getAnalytics() {
-    /** Returns example analytics metrics. */
-    await delay(220);
-    return {
-      activeUsers: 1280,
-      lessonCompletions: 4567,
-      engagementScore: 78,
-    };
-  },
-
-  // PUBLIC_INTERFACE
-  async getAuditLogs({ q } = {}) {
-    /** Returns sample audit logs filtered by keyword q. */
-    await delay(200);
-    const all = [
-      { id: 'a1', ts: Date.now() - 3600_000, actor: 'admin@example.com', action: 'published', target: 'Lesson c2' },
-      { id: 'a2', ts: Date.now() - 7200_000, actor: 'mod@example.com', action: 'approved', target: 'Comment m1' },
-      { id: 'a3', ts: Date.now() - 9600_000, actor: 'admin@example.com', action: 'updated', target: 'User u3 role' },
-    ];
-    if (!q) return all;
-    const ql = String(q).toLowerCase();
-    return all.filter((l) =>
-      [l.actor, l.action, l.target].some((f) => String(f).toLowerCase().includes(ql))
-    );
-  },
+  getAnalytics: fetchAnalytics,
+  getAuditLogs: fetchAuditLog,
 };
 
 export default adminApi;
