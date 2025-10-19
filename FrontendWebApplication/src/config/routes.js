@@ -4,6 +4,7 @@ export const ROUTES = {
   LESSONS: '/lessons',
   QUIZZES: '/quizzes',
   PRACTICE: '/practice',
+  PRACTICE_AI: '/practice/ai',
   HISTORY: '/history',
   CHALLENGES: '/challenges',
   PROFILE: '/profile',

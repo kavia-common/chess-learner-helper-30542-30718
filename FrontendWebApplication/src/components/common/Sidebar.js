@@ -12,6 +12,7 @@ export default function Sidebar() {
         <li><NavLink to={ROUTES.LESSONS}>Lessons</NavLink></li>
         <li><NavLink to={ROUTES.QUIZZES}>Quizzes</NavLink></li>
         <li><NavLink to={ROUTES.PRACTICE}>Practice</NavLink></li>
+        <li><NavLink to={ROUTES.PRACTICE_AI}>Play vs AI</NavLink></li>
         <li><NavLink to={ROUTES.HISTORY}>History</NavLink></li>
         <li><NavLink to={ROUTES.CHALLENGES}>Challenges</NavLink></li>
         <li><NavLink to={ROUTES.PROFILE}>Profile</NavLink></li>

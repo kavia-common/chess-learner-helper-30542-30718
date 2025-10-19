@@ -201,4 +201,8 @@
   .navbar .navbar-links {
     display: none;
   }
+  /* Allow board to expand nicely on mobile */
+  .page [role="grid"] {
+    max-width: 100% !important;
+  }
 }

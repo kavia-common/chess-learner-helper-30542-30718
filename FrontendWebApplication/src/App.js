@@ -20,6 +20,7 @@ import EditProfile from './routes/Profile/EditProfile';
 import LessonList from './routes/Lessons/LessonList';
 import LessonDetail from './routes/Lessons/LessonDetail';
 import Quiz from './routes/Lessons/Quiz';
+import { PlayAI } from './routes/Practice';
 
 // Simple placeholder pages for now
 function Home() {
@@ -30,11 +31,11 @@ function Home() {
     </div>
   );
 }
-function Placeholder({ title }) {
+function Placeholder({ title, children }) {
   return (
     <div className="page">
       <h2>{title}</h2>
-      <p>Content coming soon.</p>
+      {children || <p>Content coming soon.</p>}
     </div>
   );
 }
@@ -66,7 +67,18 @@ export default function App() {
         <Route path={`${ROUTES.LESSONS}/:lessonId`} element={<LessonDetail />} />
         <Route path={ROUTES.QUIZZES} element={<Placeholder title="Quizzes" />} />
         <Route path={`${ROUTES.QUIZZES}/:lessonId`} element={<Quiz />} />
-        <Route path={ROUTES.PRACTICE} element={<Placeholder title="Practice Games" />} />
+        <Route path={ROUTES.PRACTICE} element={
+          <Placeholder title="Practice">
+            <div style={{ display: 'grid', gap: 8, marginTop: 12 }}>
+              <p>Choose a practice mode:</p>
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                <a className="btn" href={ROUTES.PRACTICE_AI} aria-label="Play versus AI">Play vs AI</a>
+                <button className="btn" disabled style={{ background: '#6c757d' }} aria-disabled="true">Multiplayer (coming soon)</button>
+              </div>
+            </div>
+          </Placeholder>
+        } />
+        <Route path={ROUTES.PRACTICE_AI} element={<PlayAI />} />
 
         {/* Protected user areas */}
         <Route element={<ProtectedRoute />}>
