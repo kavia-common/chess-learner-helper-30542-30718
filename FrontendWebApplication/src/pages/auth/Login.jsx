@@ -2,29 +2,29 @@ import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { isValidEmail } from '../../utils/validators';
 import { SocialLoginButtons } from '../../components/auth/SocialLoginButtons';
-import { useStore, authActions } from '../../store';
+import { useAuth } from '../../store/hooks';
 
 /**
  * PUBLIC_INTERFACE
  * Login page with email/password fields, validation, and social login buttons.
  */
 export function Login() {
-  const { state, dispatch } = useStore();
-  const doLogin = authActions.login(dispatch);
+  const { state, actions } = useAuth();
+  const doLogin = actions.login;
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from?.pathname || '/';
 
   const [form, setForm] = useState({ email: '', password: '' });
   const [errors, setErrors] = useState({});
-  const loading = state.auth.loading;
-  const apiError = state.auth.error;
+  const loading = state.loading;
+  const apiError = state.error;
 
   useEffect(() => {
-    if (state.auth.isAuthenticated) {
+    if (state.isAuthenticated) {
       navigate(from, { replace: true });
     }
-  }, [state.auth.isAuthenticated, navigate, from]);
+  }, [state.isAuthenticated, navigate, from]);
 
   const validate = () => {
     const errs = {};

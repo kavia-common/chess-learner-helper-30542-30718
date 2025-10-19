@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
-import { useStore, authActions, StoreActions } from '../../store';
+import { useAuth } from '../../store/hooks';
 
 /**
  * PUBLIC_INTERFACE
@@ -9,8 +9,8 @@ import { useStore, authActions, StoreActions } from '../../store';
  * Includes a High Contrast toggle that persists to localStorage and sets html[data-contrast].
  */
 export function Navbar() {
-  const { state, dispatch } = useStore();
-  const doLogout = authActions.logout(dispatch);
+  const { state, actions } = useAuth();
+  const doLogout = actions.logout;
 
   // Persist and initialize contrast setting
   useEffect(() => {
@@ -35,8 +35,8 @@ export function Navbar() {
     outlineOffset: '3px'
   });
 
-  const authed = Boolean(state?.auth?.isAuthenticated);
-  const role = state?.auth?.user?.role || 'learner';
+  const authed = Boolean(state?.isAuthenticated);
+  const role = state?.user?.role || 'learner';
 
   return (
     <nav
