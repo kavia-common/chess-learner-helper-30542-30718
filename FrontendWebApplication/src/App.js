@@ -13,6 +13,8 @@ import Register from './routes/Auth/Register';
 import VerifyEmail from './routes/Auth/VerifyEmail';
 import ResetPassword from './routes/Auth/ResetPassword';
 import Onboarding from './routes/Onboarding';
+import Profile from './routes/Profile/Profile';
+import EditProfile from './routes/Profile/EditProfile';
 
 // Simple placeholder pages for now
 function Home() {
@@ -63,7 +65,8 @@ export default function App() {
         <Route element={<ProtectedRoute />}>
           <Route path={ROUTES.HISTORY} element={<Placeholder title="Game History" />} />
           <Route path={ROUTES.CHALLENGES} element={<Placeholder title="Challenges" />} />
-          <Route path={ROUTES.PROFILE} element={<Placeholder title="Your Profile" />} />
+          <Route path={ROUTES.PROFILE} element={<Profile />} />
+          <Route path={`${ROUTES.PROFILE}/edit`} element={<EditProfile />} />
           <Route path={ROUTES.ONBOARDING} element={<Onboarding />} />
         </Route>
 

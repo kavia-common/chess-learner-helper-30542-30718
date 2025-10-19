@@ -149,6 +149,10 @@
 .btn:hover {
   opacity: 0.92;
 }
+.btn.small {
+  padding: 6px 10px;
+  font-size: 12px;
+}
 
 .page h1, .page h2 {
   margin-top: 0;

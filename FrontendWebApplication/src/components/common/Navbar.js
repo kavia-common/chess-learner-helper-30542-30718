@@ -2,11 +2,13 @@ import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { ThemeContext } from '../../context/ThemeContext';
 import { ROUTES } from '../../config/routes';
+import { useAuth } from '../../context/AuthContext';
 
 // PUBLIC_INTERFACE
 export default function Navbar() {
   /** Top navigation bar with brand and quick links. */
   const { theme, toggleTheme, highContrast, toggleContrast } = useContext(ThemeContext);
+  const { user, logout } = useAuth();
 
   return (
     <nav className="navbar" aria-label="Main navigation">
@@ -21,12 +23,29 @@ export default function Navbar() {
         <li><Link to={ROUTES.PRACTICE}>Practice</Link></li>
         <li><Link to={ROUTES.HISTORY}>History</Link></li>
         <li><Link to={ROUTES.CHALLENGES}>Challenges</Link></li>
+        {user && <li><Link to={ROUTES.PROFILE}>Profile</Link></li>}
       </ul>
       <div className="navbar-actions">
-        <button className="btn small" onClick={toggleContrast} aria-pressed={highContrast} aria-label="Toggle high contrast">
+        {!user && (
+          <>
+            <Link to={ROUTES.LOGIN} className="btn small">Login</Link>
+            <Link to={ROUTES.REGISTER} className="btn small" style={{ marginLeft: 8 }}>Register</Link>
+          </>
+        )}
+        {user && (
+          <>
+            <Link to={ROUTES.PROFILE} className="btn small" aria-label="Go to profile">
+              {user.displayName?.split(' ')?.[0] || user.email || 'Account'}
+            </Link>
+            <button className="btn small" onClick={logout} style={{ marginLeft: 8 }}>
+              Logout
+            </button>
+          </>
+        )}
+        <button className="btn small" onClick={toggleContrast} aria-pressed={highContrast} aria-label="Toggle high contrast" style={{ marginLeft: 8 }}>
           {highContrast ? 'Low Contrast' : 'High Contrast'}
         </button>
-        <button className="btn small" onClick={toggleTheme} aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}>
+        <button className="btn small" onClick={toggleTheme} aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`} style={{ marginLeft: 8 }}>
           {theme === 'light' ? '🌙' : '☀️'}
         </button>
       </div>
