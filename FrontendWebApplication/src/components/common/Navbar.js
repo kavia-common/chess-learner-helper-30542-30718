@@ -26,6 +26,7 @@ export default function Navbar() {
         <li><Link to={ROUTES.LEADERBOARDS}>Leaderboards</Link></li>
         <li><Link to={ROUTES.ACHIEVEMENTS}>Achievements</Link></li>
         <li><Link to={ROUTES.HISTORY}>History</Link></li>
+        {user?.role === 'admin' && <li><Link to={`${ROUTES.ADMIN}/dashboard`}>Admin</Link></li>}
         {user && <li><Link to={ROUTES.PROFILE}>Profile</Link></li>}
       </ul>
       <div className="navbar-actions">

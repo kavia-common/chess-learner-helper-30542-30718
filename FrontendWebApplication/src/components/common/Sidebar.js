@@ -1,10 +1,15 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { ROUTES } from '../../config/routes';
+import { useAuth } from '../../context/AuthContext';
 
 // PUBLIC_INTERFACE
 export default function Sidebar() {
   /** Sidebar for primary navigation items. */
+  const { user } = useAuth();
+  const location = useLocation();
+  const isAdminRoute = location.pathname.startsWith(ROUTES.ADMIN);
+
   return (
     <aside className="sidebar" aria-label="Section navigation">
       <ul>
@@ -17,7 +22,21 @@ export default function Sidebar() {
         <li><NavLink to={ROUTES.HISTORY}>History</NavLink></li>
         <li><NavLink to={ROUTES.CHALLENGES}>Challenges</NavLink></li>
         <li><NavLink to={ROUTES.PROFILE}>Profile</NavLink></li>
-        <li><NavLink to={ROUTES.ADMIN}>Admin</NavLink></li>
+        {user?.role === 'admin' && (
+          <>
+            <li><NavLink to={ROUTES.ADMIN}>Admin</NavLink></li>
+            {isAdminRoute && (
+              <ul aria-label="Admin submenu" style={{ marginLeft: 12 }}>
+                <li><NavLink to={`${ROUTES.ADMIN}/dashboard`}>Dashboard</NavLink></li>
+                <li><NavLink to={`${ROUTES.ADMIN}/users`}>Users</NavLink></li>
+                <li><NavLink to={`${ROUTES.ADMIN}/lessons`}>Lessons</NavLink></li>
+                <li><NavLink to={`${ROUTES.ADMIN}/moderation`}>Moderation</NavLink></li>
+                <li><NavLink to={`${ROUTES.ADMIN}/analytics`}>Analytics</NavLink></li>
+                <li><NavLink to={`${ROUTES.ADMIN}/audit-log`}>Audit Log</NavLink></li>
+              </ul>
+            )}
+          </>
+        )}
       </ul>
     </aside>
   );

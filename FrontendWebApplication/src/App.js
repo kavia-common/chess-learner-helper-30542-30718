@@ -98,9 +98,15 @@ export default function App() {
           <Route path={ROUTES.ONBOARDING} element={<Onboarding />} />
         </Route>
 
-        {/* Admin protected route with role example */}
+        {/* Admin protected routes (role-gated) */}
         <Route element={<ProtectedRoute roles={['admin']} />}>
-          <Route path={ROUTES.ADMIN} element={<div className="page"><h2>Admin Tools</h2></div>} />
+          <Route path={ROUTES.ADMIN} element={<Navigate to={`${ROUTES.ADMIN}/dashboard`} replace />} />
+          <Route path={`${ROUTES.ADMIN}/dashboard`} element={React.createElement(require('./routes/Admin/AdminDashboard').default)} />
+          <Route path={`${ROUTES.ADMIN}/users`} element={React.createElement(require('./routes/Admin/Users').default)} />
+          <Route path={`${ROUTES.ADMIN}/lessons`} element={React.createElement(require('./routes/Admin/LessonsCMS').default)} />
+          <Route path={`${ROUTES.ADMIN}/moderation`} element={React.createElement(require('./routes/Admin/Moderation').default)} />
+          <Route path={`${ROUTES.ADMIN}/analytics`} element={React.createElement(require('./routes/Admin/Analytics').default)} />
+          <Route path={`${ROUTES.ADMIN}/audit-log`} element={React.createElement(require('./routes/Admin/AuditLog').default)} />
         </Route>
 
         {/* Auth routes (public) */}
